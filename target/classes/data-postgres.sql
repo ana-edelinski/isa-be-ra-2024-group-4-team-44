@@ -26,12 +26,4 @@ insert into exam (student_id, course_id, date, grade) values (1, 2, '2016-04-19'
 insert into exam (student_id, course_id, date, grade) values (2, 1, '2016-02-01', 10);
 insert into exam (student_id, course_id, date, grade) values (2, 2, '2016-04-19', 10);
 
-INSERT INTO users (username, email, password, activated) VALUES ('marko', 'marko@example.com', 'password123', true);
-INSERT INTO users (username, email, password, activated) VALUES ('milan', 'milan@example.com', 'password456', true);
-INSERT INTO users (username, email, password, activated) VALUES ('ivana', 'ivana@example.com', 'password789', false);
-INSERT INTO users (username, email, password, activated) VALUES ('bojan', 'bojan@example.com', 'bojanpass', true);
-INSERT INTO users (username, email, password, activated) VALUES ('pera', 'pera@example.com', 'perapass', false);
-INSERT INTO users (username, email, password, activated) VALUES ('zoran', 'zoran@example.com', 'zoranpass', true);
-INSERT INTO users (username, email, password, activated) VALUES ('bojana', 'bojana@example.com', 'bojanapass', false);
-INSERT INTO users (username, email, password, activated) VALUES ('milana', 'milana@example.com', 'milanapass', true);
-INSERT INTO users (username, email, password, activated) VALUES ('jovana', 'jovana@example.com', 'jovanapass', false);
+insert into users (username, email, password, activated, name) values ('marko', 'marko@example.com', 'password123', true, 'Marko');

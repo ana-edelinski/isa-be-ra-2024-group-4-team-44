@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -20,52 +22,60 @@ public class UserService {
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Autowired
+    private EmailService emailService; // Klasa za slanje emailova
+
     @Transactional
-    public ResponseEntity<User> register(UserDTO userDto) {
-        // Proveri da li korisničko ime već postoji
-        if (userRepository.existsByUsername(userDto.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // 409 Conflict
-        }
-
-        // Proveri da li email već postoji
-        if (userRepository.existsByEmail(userDto.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // 409 Conflict
-        }
-
-        // Kreiraj novog korisnika
+    public ResponseEntity<?> register(UserDTO userDto) {
+        // Validacija (proveri da li već postoji korisnik sa istim email-om ili korisničkim imenom)
+        System.out.println ("Započeta registracija za korisnika: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword())); // Heširaj lozinku
-        user.setActivated(false); // Postavi da nije aktiviran
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setName(userDto.getName());
+        //user.setAddress(userDto.getAddress());
+        user.setActivated(false);
 
-        userRepository.save(user); // Spasi korisnika
+        userRepository.save(user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(user); // 201 Created
+        // Generisanje aktivacionog linka
+        String activationToken = UUID.randomUUID().toString();
+        emailService.sendActivationEmail(user.getEmail(), activationToken);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserDTO(user));
     }
 
+
     public ResponseEntity<?> login(UserDTO userDto) {
-        User user = userRepository.findByEmail(userDto.getEmail()).orElseThrow(() ->
-                new RuntimeException("Ne postoji korisnik sa tim email-om."));
+        Optional<User> userOptional = userRepository.findByEmail(userDto.getEmail());
+        if (!userOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ne postoji korisnik sa tim email-om.");
+        }
+
+        User user = userOptional.get();
 
         if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // 401 Unauthorized
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neispravna lozinka");
         }
 
         if (!user.isActivated()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null); // 403 Forbidden
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nalog nije aktiviran");
         }
 
-        return ResponseEntity.ok(user); // 200 OK
+        // Obmotavanje UserDTO u JSON format
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", new UserDTO(user));
+        return ResponseEntity.ok(response);
     }
 
-    // Dodaj metodu za aktivaciju
     public ResponseEntity<?> activateUser(String token) {
-        // Logika za aktivaciju naloga
-        return ResponseEntity.ok("Korisnik je aktiviran."); // Primer odgovora
+
+        return ResponseEntity.ok("Korisnik je aktiviran.");
     }
 }
