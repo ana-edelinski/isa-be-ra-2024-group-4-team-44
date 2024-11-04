@@ -28,24 +28,22 @@ public class UserService {
     }
 
     @Autowired
-    private EmailService emailService; // Klasa za slanje emailova
+    private EmailService emailService;
 
     @Transactional
     public ResponseEntity<?> register(UserDTO userDto) {
-        // Validacija (proveri da li već postoji korisnik sa istim email-om ili korisničkim imenom)
-        System.out.println ("Započeta registracija za korisnika: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setName(userDto.getName());
-        //user.setAddress(userDto.getAddress());
         user.setActivated(false);
+
+        String activationToken = UUID.randomUUID().toString();
+        user.setActivationToken(activationToken);
 
         userRepository.save(user);
 
-        // Generisanje aktivacionog linka
-        String activationToken = UUID.randomUUID().toString();
         emailService.sendActivationEmail(user.getEmail(), activationToken);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserDTO(user));
@@ -68,14 +66,23 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nalog nije aktiviran");
         }
 
-        // Obmotavanje UserDTO u JSON format
         Map<String, Object> response = new HashMap<>();
         response.put("user", new UserDTO(user));
         return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<?> activateUser(String token) {
+        Optional<User> userOptional = userRepository.findByActivationToken(token);
+        if (!userOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nevažeći aktivacioni token.");
+        }
 
-        return ResponseEntity.ok("Korisnik je aktiviran.");
+        User user = userOptional.get();
+        user.setActivated(true);
+        user.setActivationToken(null);
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Korisnik je uspešno aktiviran.");
     }
 }

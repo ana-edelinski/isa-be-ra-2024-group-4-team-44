@@ -25,6 +25,9 @@ public class User {
     @Column(name= "activated", nullable = false)
     private boolean activated;
 
+    @Column(name= "activation_token", nullable = true)
+    private String activationToken;
+
     public User (Integer id, String username, String name, String email, String password, boolean activated)
     {
         this.id = id;
@@ -72,6 +75,14 @@ public class User {
     }
     public void setActivated(boolean activated) {
         this.activated = activated;
+    }
+
+    public String getActivationToken() {
+        return activationToken;
+    }
+
+    public void setActivationToken(String activationToken) {
+        this.activationToken = activationToken;
     }
 
 
