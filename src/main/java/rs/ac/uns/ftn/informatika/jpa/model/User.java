@@ -28,7 +28,11 @@ public class User {
     @Column(name= "activation_token", nullable = true)
     private String activationToken;
 
-    public User (Integer id, String username, String name, String email, String password, boolean activated)
+    @ManyToOne (cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
+
+    public User (Integer id, String username, String name, String email, String password, boolean activated, Address address)
     {
         this.id = id;
         this.username = username;
@@ -36,6 +40,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.activated = activated;
+        this.address = address;
     }
     public User() {}
     public Integer getId() {
@@ -83,6 +88,14 @@ public class User {
 
     public void setActivationToken(String activationToken) {
         this.activationToken = activationToken;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
 
