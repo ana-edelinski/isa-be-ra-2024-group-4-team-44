@@ -26,5 +26,9 @@ insert into exam (student_id, course_id, date, grade) values (1, 2, '2016-04-19'
 insert into exam (student_id, course_id, date, grade) values (2, 1, '2016-02-01', 10);
 insert into exam (student_id, course_id, date, grade) values (2, 2, '2016-04-19', 10);
 
-insert into users (username, email, password, activated, name) values ('marko', 'marko@example.com', 'password123', true, 'Marko');
-insert into users (username, email, password, activated, name) values ('pera', 'pera@gmail.com', '$2a$10$phbu2oHcLQFL4PoXYyRW/erd.WJsHr9oAkuMxk0MoBdNjZ02Evxm2', true , 'pera')
+
+insert into addresses (street, city, postal_code) values ('Bulevar Cara Lazara 88', 'Novi Sad', 21000);
+insert into addresses (street, city, postal_code) values ('Karadjordjeva 5A', 'Pozega', 31210);
+
+insert into users (username, email, password, activated, name, surname, address_id) values ('marko', 'marko@example.com', 'password123', true, 'Marko', 'Markovic', 1);
+insert into users (username, email, password, activated, name, surname, address_id) values ('pera', 'pera@gmail.com', '$2a$10$phbu2oHcLQFL4PoXYyRW/erd.WJsHr9oAkuMxk0MoBdNjZ02Evxm2', true , 'pera', 'peric', 2);
