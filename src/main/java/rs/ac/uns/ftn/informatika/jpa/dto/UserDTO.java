@@ -6,23 +6,25 @@ public class UserDTO {
     private Integer id;
     private String email;
     private String username;
+    private String name;
     private String password;
     private String confirmPassword;
 
-    UserDTO(){
+    public UserDTO(){
 
     }
-    UserDTO(Integer id, String email, String username, String password, String confirmPassword) {
+    public UserDTO(Integer id, String email, String username, String name, String password, String confirmPassword) {
         this.id = id;
         this.email = email;
         this.username = username;
+        this.name = name;
         this.password = password;
         this.confirmPassword = confirmPassword;
     }
 
-    UserDTO(User user)
+    public UserDTO(User user)
     {
-        this(user.getId(), user.getEmail(), user.getUsername(), user.getPassword(), user.getPassword());
+        this(user.getId(), user.getEmail(), user.getUsername(), user.getName(), user.getPassword(), user.getPassword());
     }
     public Integer getId() {
         return id;
@@ -33,6 +35,11 @@ public class UserDTO {
     public String getUsername() {
         return username;
     }
+
+    public String getName() {
+        return name;
+    }
+
     public String getPassword() {
         return password;
     }

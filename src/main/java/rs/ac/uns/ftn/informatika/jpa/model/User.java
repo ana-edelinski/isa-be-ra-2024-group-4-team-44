@@ -19,13 +19,20 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name= "activated", nullable = false)
     private boolean activated;
 
-    public User (Integer id, String username, String email, String password, boolean activated)
+    @Column(name= "activation_token", nullable = true)
+    private String activationToken;
+
+    public User (Integer id, String username, String name, String email, String password, boolean activated)
     {
         this.id = id;
         this.username = username;
+        this.name = name;
         this.email = email;
         this.password = password;
         this.activated = activated;
@@ -42,6 +49,14 @@ public class User {
     }
     public void setUsername(String username) {
         this.username = username;
+    }
+    public String getName()
+    {
+        return name;
+    }
+    public void setName(String name)
+    {
+        this.name = name;
     }
     public String getEmail() {
         return email;
@@ -60,6 +75,14 @@ public class User {
     }
     public void setActivated(boolean activated) {
         this.activated = activated;
+    }
+
+    public String getActivationToken() {
+        return activationToken;
+    }
+
+    public void setActivationToken(String activationToken) {
+        this.activationToken = activationToken;
     }
 
 

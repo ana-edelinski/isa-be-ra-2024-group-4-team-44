@@ -5,6 +5,7 @@ C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\j
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\UserService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\StudentService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\model\Teacher.java
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\model\WebConfig.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\repository\CustomRepository.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\mapper\TeacherDTOMapper.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\ExamService.java
@@ -19,6 +20,7 @@ C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\j
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\repository\StudentRepository.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\StudentDTO.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\CourseDTO.java
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\EmailService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\model\Course.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\controller\UserController.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\model\User.java
