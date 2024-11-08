@@ -32,12 +32,12 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
-    @Column(name = "like_count")
-    private Integer likeCount = 0;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Like> likes = new ArrayList<>();
 
     public Post() {}
 
-    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, List<Comment> comments, Integer likeCount) {
+    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, List<Comment> comments, List<Like> likes) {
         this.id = id;
         this.creator = creator;
         this.description = description;
@@ -45,7 +45,7 @@ public class Post {
         this.imagePath = imagePath;
         this.location = location;
         this.comments = comments;
-        this.likeCount = likeCount;
+        this.likes = likes;
     }
 
     public Integer getId() {
@@ -104,11 +104,11 @@ public class Post {
         this.comments = comments;
     }
 
-    public Integer getLikeCount() {
-        return likeCount;
+    public List<Like> getLikes() {
+        return likes;
     }
 
-    public void setLikeCount(Integer likeCount) {
-        this.likeCount = likeCount;
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
     }
 }

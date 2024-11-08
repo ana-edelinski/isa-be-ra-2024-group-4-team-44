@@ -18,13 +18,13 @@ public class PostDTO {
     private String locationCity;
     private String locationPostalCode;
     private List<CommentDTO> comments;
-    private Integer likeCount;
+    private int likeCount;
 
     public PostDTO() {}
 
     public PostDTO(Integer id, Integer creatorId, String creatorUsername, String description,
                    LocalDateTime creationTime, String imagePath, Integer locationId,
-                   String locationStreet, String locationCity, String locationPostalCode, List<CommentDTO> comments, Integer likeCount) {
+                   String locationStreet, String locationCity, String locationPostalCode, List<CommentDTO> comments, int likeCount) {
         this.id = id;
         this.creatorId = creatorId;
         this.creatorUsername = creatorUsername;
@@ -52,11 +52,12 @@ public class PostDTO {
             this.locationStreet = post.getLocation().getStreet();
             this.locationCity = post.getLocation().getCity();
             this.locationPostalCode = post.getLocation().getPostalCode();
-            this.likeCount = post.getLikeCount();
-            this.comments = post.getComments().stream()
-                    .map(CommentDTO::new)
-                    .collect(Collectors.toList());
         }
+
+        this.likeCount = post.getLikes().size();
+        this.comments = post.getComments().stream()
+                .map(CommentDTO::new)
+                .collect(Collectors.toList());
     }
 
     public Integer getId() {
@@ -103,7 +104,7 @@ public class PostDTO {
         return comments;
     }
 
-    public Integer getLikeCount() {
+    public int getLikeCount() {
         return likeCount;
     }
 }

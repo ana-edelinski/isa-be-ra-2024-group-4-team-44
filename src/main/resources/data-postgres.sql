@@ -13,15 +13,7 @@ values (
            1
        );
 
-insert into likes(user_id, post_id)
-values  (
-         1,
-         1
-        );
-insert into comments(text, creation_time, user_id, post_id)
-values (
-        'komentar',
-        '2024-11-07 12:30:00',
-        1,
-        1
-       )
+insert into likes(user_id, post_id) values  (1,1);
+insert into likes(user_id, post_id) values  (2,1);
+
+insert into comments(text, creation_time, user_id, post_id) values ('komentar','2024-11-07 12:30:00',1,1);
