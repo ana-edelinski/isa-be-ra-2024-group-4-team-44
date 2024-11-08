@@ -6,8 +6,6 @@ import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 
-import java.util.Optional;
-
 @Service
 public class PostService {
 
@@ -15,7 +13,8 @@ public class PostService {
     private PostRepository postRepository;
 
     public PostDTO getById(Integer id) {
-        Post post = postRepository.getById(id);
+        Post post = postRepository.getById(id).orElseThrow(() -> new RuntimeException("Post not found"));
         return new PostDTO(post);
     }
+
 }

@@ -2,6 +2,8 @@ package rs.ac.uns.ftn.informatika.jpa.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -27,16 +29,23 @@ public class Post {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Address location;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
+
+    @Column(name = "like_count")
+    private Integer likeCount = 0;
 
     public Post() {}
 
-    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location) {
+    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, List<Comment> comments, Integer likeCount) {
         this.id = id;
         this.creator = creator;
         this.description = description;
         this.creationTime = creationTime;
         this.imagePath = imagePath;
         this.location = location;
+        this.comments = comments;
+        this.likeCount = likeCount;
     }
 
     public Integer getId() {
@@ -85,5 +94,21 @@ public class Post {
 
     public void setLocation(Address location) {
         this.location = location;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
     }
 }

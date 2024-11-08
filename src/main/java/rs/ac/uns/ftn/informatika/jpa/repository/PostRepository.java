@@ -8,11 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository  extends JpaRepository<Post, Integer> {
-
-    @Query("select p from Post p")
-    List<Post> getAll();
-
-    @Query("select p from Post p where p.id = ?1")
-    Post getById(Integer id);
-
+    @Query("SELECT p FROM Post p LEFT JOIN FETCH p.comments WHERE p.id = ?1")
+    Optional<Post> getById(Integer id);
 }
