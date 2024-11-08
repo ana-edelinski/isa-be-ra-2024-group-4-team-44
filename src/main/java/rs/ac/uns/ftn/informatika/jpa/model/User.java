@@ -28,15 +28,19 @@ public class User {
     @Column(name= "activation_token", nullable = true)
     private String activationToken;
 
+    @Column(name = "surname", nullable = false)
+    private String surname;
+
     @ManyToOne (cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    public User (Integer id, String username, String name, String email, String password, boolean activated, Address address)
+    public User (Integer id, String username, String name, String surname, String email, String password, boolean activated, Address address)
     {
         this.id = id;
         this.username = username;
         this.name = name;
+        this.surname = surname;
         this.email = email;
         this.password = password;
         this.activated = activated;
@@ -62,6 +66,14 @@ public class User {
     public void setName(String name)
     {
         this.name = name;
+    }
+    public String getSurname()
+    {
+        return surname;
+    }
+    public void setSurname (String surname)
+    {
+        this.surname = surname;
     }
     public String getEmail() {
         return email;
