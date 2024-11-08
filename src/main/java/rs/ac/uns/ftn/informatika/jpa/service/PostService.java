@@ -36,7 +36,30 @@ public class PostService {
                 post.getComments().stream().map(CommentDTO::new).collect(Collectors.toList()),
                 likeCount
         );
+    }
 
+    public PostDTO updatePost(Integer id, PostDTO postDTO, Integer userId) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getCreator().getId().equals(userId)) {
+            throw new RuntimeException("User not authorized to update this post");
+        }
+
+        post.setDescription(postDTO.getDescription());
+        post.setImagePath(postDTO.getImagePath());
+        postRepository.save(post);
+
+        return getById(id);
+    }
+
+    public void deletePost(Integer id, Integer userId) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getCreator().getId().equals(userId)) {
+            throw new RuntimeException("User not authorized to delete this post");
+        }
+
+        postRepository.deleteById(id);
     }
 
 }

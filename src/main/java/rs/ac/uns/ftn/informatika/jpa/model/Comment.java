@@ -16,11 +16,11 @@ public class Comment {
     @Column(name = "creation_time", nullable = false)
     private LocalDateTime creationTime;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
 

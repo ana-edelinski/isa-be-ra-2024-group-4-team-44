@@ -12,7 +12,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User creator;
 
@@ -25,14 +25,14 @@ public class Post {
     @Column(name = "image_path", unique = false, nullable = false)
     private String imagePath;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Address location;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Like> likes = new ArrayList<>();
 
     public Post() {}

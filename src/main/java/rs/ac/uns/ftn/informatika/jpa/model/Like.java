@@ -9,11 +9,11 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
 

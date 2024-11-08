@@ -13,7 +13,16 @@ values (
            1
        );
 
-insert into likes(user_id, post_id) values  (1,1);
+insert into posts (user_id, description, creation_time, image_path, location_id)
+values (
+           2,
+           'This is a sample post description 2.',
+           '2024-11-07 12:30:00',
+           '/images/sample2.jpg',
+           1
+       );
+
+insert into likes(user_id, post_id) values  (1,2);
 insert into likes(user_id, post_id) values  (2,1);
 
 insert into comments(text, creation_time, user_id, post_id) values ('komentar','2024-11-07 12:30:00',1,1);
