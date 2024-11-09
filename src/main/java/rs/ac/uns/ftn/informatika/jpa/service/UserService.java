@@ -2,6 +2,14 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserTokenState;
+import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
@@ -9,25 +17,40 @@ import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.NoSuchElementException;
+import rs.ac.uns.ftn.informatika.jpa.service.UserService;
+
+import java.util.*;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
+    @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    private TokenUtils tokenUtils;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenUtils tokenUtils, AuthenticationManager authenticationManager) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.tokenUtils = tokenUtils;
+        this.authenticationManager = authenticationManager;
     }
 
     @Autowired
@@ -59,7 +82,9 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setName(userDto.getName());
+        user.setSurname(userDto.getSurname());
         user.setActivated(false);
+        user.setEnabled(true);
 
         String activationToken = UUID.randomUUID().toString();
         user.setActivationToken(activationToken);
@@ -70,6 +95,9 @@ public class UserService {
         address.setPostalCode(userDto.getPostalCode());
         user.setAddress(address);
 
+        List<Role> roles = roleService.findByName("ROLE_USER");
+        user.setRoles(roles);
+
         userRepository.save(user);
 
         emailService.sendActivationEmail(user.getEmail(), activationToken);
@@ -78,26 +106,59 @@ public class UserService {
     }
 
 
-    public ResponseEntity<?> login(UserDTO userDto) {
-        Optional<User> userOptional = userRepository.findByEmail(userDto.getEmail());
-        if (!userOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ne postoji korisnik sa tim email-om.");
-        }
+//    public ResponseEntity<?> login(UserDTO userDto) {
+//        Optional<User> userOptional = userRepository.findByEmail(userDto.getEmail());
+//        if (!userOptional.isPresent()) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ne postoji korisnik sa tim email-om.");
+//        }
+//
+//        User user = userOptional.get();
+//
+//        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neispravna lozinka");
+//        }
+//
+//        if (!user.isActivated()) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nalog nije aktiviran");
+//        }
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("user", new UserDTO(user));
+//        return ResponseEntity.ok(response);
+//    }
+public ResponseEntity<?> login(UserDTO userDto) {
+    // Pronađite korisnika po email adresi
+    Optional<User> userOptional = userRepository.findByEmail(userDto.getEmail());
 
-        User user = userOptional.get();
-
-        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neispravna lozinka");
-        }
-
-        if (!user.isActivated()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nalog nije aktiviran");
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("user", new UserDTO(user));
-        return ResponseEntity.ok(response);
+    // Proverite da li korisnik postoji
+    if (!userOptional.isPresent()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ne postoji korisnik sa tim email-om.");
     }
+
+    User user = userOptional.get();
+
+    // Proverite da li lozinka odgovara
+    if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neispravna lozinka");
+    }
+
+    // Proverite da li je korisnik aktiviran
+    if (!user.isActivated()) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nalog nije aktiviran");
+    }
+
+    // Generišite JWT token
+    String jwt = tokenUtils.generateToken(user.getEmail()); // Koristite email za generisanje tokena
+    int expiresIn = tokenUtils.getExpiredIn();
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("token", jwt);
+    response.put("expiresIn", expiresIn);
+    response.put("userId", user.getId());
+
+    return ResponseEntity.ok(response);
+}
+
 
     public ResponseEntity<?> activateUser(String token) {
         Optional<User> userOptional = userRepository.findByActivationToken(token);
@@ -159,4 +220,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+        } else {
+            return user;
+        }
+    }
 }
