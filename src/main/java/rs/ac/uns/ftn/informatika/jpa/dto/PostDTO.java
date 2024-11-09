@@ -60,6 +60,10 @@ public class PostDTO {
                 .collect(Collectors.toList());
     }
 
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     public Integer getId() {
         return id;
     }

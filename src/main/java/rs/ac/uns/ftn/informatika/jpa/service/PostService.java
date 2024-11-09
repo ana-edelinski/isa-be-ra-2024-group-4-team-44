@@ -7,6 +7,7 @@ import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
+import rs.ac.uns.ftn.informatika.jpa.repository.AddressRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.LikeRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
@@ -25,6 +26,9 @@ public class PostService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     public PostDTO getById(Integer id) {
         Post post = postRepository.getById(id).orElseThrow(() -> new RuntimeException("Post not found"));
@@ -50,6 +54,9 @@ public class PostService {
         User user = userRepository.findById(postDTO.getCreatorId())
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
+
+        System.out.println("Prolso je exception za usera.");
+
         post.setCreator(user);
         post.setDescription(postDTO.getDescription());
         post.setCreationTime(postDTO.getCreationTime());
@@ -59,6 +66,7 @@ public class PostService {
         address.setCity(postDTO.getLocationCity());
         address.setStreet(postDTO.getLocationStreet());
         address.setPostalCode(postDTO.getLocationPostalCode());
+        addressRepository.save(address);
         post.setLocation(address);
 
         postRepository.save(post);
