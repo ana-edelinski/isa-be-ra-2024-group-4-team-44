@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.service.PostService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
@@ -52,7 +54,7 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable Integer id, @RequestParam Integer userId) {
         try {
             postService.deletePost(id, userId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);  // Brisanje uspešno
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
         } catch (RuntimeException e) {
             if (e.getMessage().equals("Post not found")) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -63,5 +65,17 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PostDTO>> getPostsByUserId(@PathVariable Integer userId) {
+        try {
+            List<PostDTO> posts = postService.getUserPostsByUserId(userId);
+            return new ResponseEntity<>(posts, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
 }

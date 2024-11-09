@@ -11,6 +11,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.LikeRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,14 @@ public class PostService {
         }
 
         postRepository.deleteById(id);
+    }
+
+    public List<PostDTO> getUserPostsByUserId(Integer userId) {
+        List<Post> userPosts = postRepository.findByUserIdWithComments(userId);
+
+        return userPosts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
     }
 
 }
