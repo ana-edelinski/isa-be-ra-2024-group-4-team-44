@@ -59,6 +59,7 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setName(userDto.getName());
+        user.setSurname(userDto.getSurname());
         user.setActivated(false);
 
         String activationToken = UUID.randomUUID().toString();
