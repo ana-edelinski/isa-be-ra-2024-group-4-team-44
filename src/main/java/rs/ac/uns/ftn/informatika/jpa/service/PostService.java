@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
+import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
+import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.LikeRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
+import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +22,9 @@ public class PostService {
 
     @Autowired
     private LikeRepository likeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public PostDTO getById(Integer id) {
         Post post = postRepository.getById(id).orElseThrow(() -> new RuntimeException("Post not found"));
@@ -36,6 +43,27 @@ public class PostService {
                 post.getComments().stream().map(CommentDTO::new).collect(Collectors.toList()),
                 likeCount
         );
+    }
+
+    public PostDTO createPost(PostDTO postDTO) {
+        Post post = new Post();
+        User user = userRepository.findById(postDTO.getCreatorId())
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        post.setCreator(user);
+        post.setDescription(postDTO.getDescription());
+        post.setCreationTime(postDTO.getCreationTime());
+        post.setImagePath(postDTO.getImagePath());
+
+        Address address = new Address();
+        address.setCity(postDTO.getLocationCity());
+        address.setStreet(postDTO.getLocationStreet());
+        address.setPostalCode(postDTO.getLocationPostalCode());
+        post.setLocation(address);
+
+        postRepository.save(post);
+
+        return postDTO;
     }
 
     public PostDTO updatePost(Integer id, PostDTO postDTO, Integer userId) {

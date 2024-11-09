@@ -24,6 +24,17 @@ public class PostController {
         }
     }
 
+    @PostMapping()
+    public ResponseEntity<PostDTO> cratePost(
+            @RequestBody PostDTO postDTO) {
+        try {
+            PostDTO cratedPost = postService.createPost(postDTO);
+            return new ResponseEntity<>(cratedPost, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<PostDTO> updatePost(
             @PathVariable Integer id,
