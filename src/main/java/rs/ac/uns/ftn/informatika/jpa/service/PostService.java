@@ -126,4 +126,12 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+    public List<PostDTO> getUserPostsByUserId(Integer userId) {
+        List<Post> userPosts = postRepository.findByUserIdWithComments(userId);
+
+        return userPosts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
 }

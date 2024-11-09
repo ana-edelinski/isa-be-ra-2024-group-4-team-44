@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.service.PostService;
-
+import java.util.List;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,7 +76,7 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable Integer id, @RequestParam Integer userId) {
         try {
             postService.deletePost(id, userId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);  // Brisanje uspešno
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
         } catch (RuntimeException e) {
             if (e.getMessage().equals("Post not found")) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -88,6 +88,15 @@ public class PostController {
         }
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PostDTO>> getPostsByUserId(@PathVariable Integer userId) {
+        try {
+            List<PostDTO> posts = postService.getUserPostsByUserId(userId);
+            return new ResponseEntity<>(posts, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     @PostMapping("/uploadImage")
     public ResponseEntity<PostDTO> uploadImage(@RequestParam("file") MultipartFile file) {
