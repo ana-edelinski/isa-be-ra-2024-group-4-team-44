@@ -34,13 +34,14 @@ public class PostService {
     public PostDTO getById(Integer id) {
         Post post = postRepository.getById(id).orElseThrow(() -> new RuntimeException("Post not found"));
         int likeCount = likeRepository.countByPostId(id);
+        String formattedImagePath = post.getImagePath().replace("src\\main\\resources\\static\\", "/");
         return new PostDTO(
                 post.getId(),
                 post.getCreator().getId(),
                 post.getCreator().getUsername(),
                 post.getDescription(),
                 post.getCreationTime(),
-                post.getImagePath(),
+                formattedImagePath,
                 post.getLocation() != null ? post.getLocation().getId() : null,
                 post.getLocation() != null ? post.getLocation().getStreet() : null,
                 post.getLocation() != null ? post.getLocation().getCity() : null,
