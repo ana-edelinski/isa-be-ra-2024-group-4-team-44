@@ -38,7 +38,7 @@ public class PostController {
     public ResponseEntity<List<PostDTO>> getAllPosts() {
         try {
             System.out.println("Usao u kontroler.");
-            List<PostDTO> posts = postService.getAllPosts();
+            List<PostDTO> posts = postService.getAll();
             return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

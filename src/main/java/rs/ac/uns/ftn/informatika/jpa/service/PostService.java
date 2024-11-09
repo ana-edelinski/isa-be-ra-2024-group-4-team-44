@@ -51,31 +51,7 @@ public class PostService {
         );
     }
 
-    public List<PostDTO> getAllPosts() {
-        System.out.println("Usao u servis.");
-        List<PostDTO> postDTOS = new ArrayList<>();
-        List<Post> posts = postRepository.findAll();
-        for(Post post : posts) {
-            int likeCount = likeRepository.countByPostId(post.getId());
-            PostDTO postDTO = new PostDTO(
-                    post.getId(),
-                    post.getCreator().getId(),
-                    post.getCreator().getUsername(),
-                    post.getDescription(),
-                    post.getCreationTime(),
-                    post.getImagePath(),
-                    post.getLocation() != null ? post.getLocation().getId() : null,
-                    post.getLocation() != null ? post.getLocation().getStreet() : null,
-                    post.getLocation() != null ? post.getLocation().getCity() : null,
-                    post.getLocation() != null ? post.getLocation().getPostalCode() : null,
-                    post.getComments().stream().map(CommentDTO::new).collect(Collectors.toList()),
-                    likeCount
-            );
-            postDTOS.add(postDTO);
-        }
-
-       return postDTOS;
-    }
+   
 
     public PostDTO createPost(PostDTO postDTO) {
         Post post = new Post();
@@ -128,6 +104,14 @@ public class PostService {
 
     public List<PostDTO> getUserPostsByUserId(Integer userId) {
         List<Post> userPosts = postRepository.findByUserIdWithComments(userId);
+
+        return userPosts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostDTO> getAll() {
+        List<Post> userPosts = postRepository.findAll();
 
         return userPosts.stream()
                 .map(PostDTO::new)
