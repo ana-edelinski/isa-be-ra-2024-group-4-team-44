@@ -5,11 +5,4 @@ import rs.ac.uns.ftn.informatika.jpa.model.Post;
 
 public interface PostRepository  extends JpaRepository<Post, Integer> {
 
-    //getall
-        
-
-    //dodati objavu //create objavu
-    //prikaz objave (jedna objava)
-
-
 }
