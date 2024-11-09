@@ -7,6 +7,7 @@ public class UserDTO {
     private String email;
     private String username;
     private String name;
+    private String surname;
     private String password;
     private String confirmPassword;
     private String street;
@@ -16,11 +17,12 @@ public class UserDTO {
     public UserDTO(){
 
     }
-    public UserDTO(Integer id, String email, String username, String name, String password, String confirmPassword, String street, String city, String postalCode) {
+    public UserDTO(Integer id, String email, String username, String name, String surname, String password, String confirmPassword, String street, String city, String postalCode) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.name = name;
+        this.surname = surname;
         this.password = password;
         this.confirmPassword = confirmPassword;
         this.street = street;
@@ -33,6 +35,7 @@ public class UserDTO {
         this.email = user.getEmail();
         this.username = user.getUsername();
         this.name = user.getName();
+        this.surname = user.getSurname();
         this.password = user.getPassword();
         this.confirmPassword = user.getPassword();
         if (user.getAddress() != null) {
@@ -53,6 +56,9 @@ public class UserDTO {
 
     public String getName() {
         return name;
+    }
+    public String getSurname() {
+        return surname;
     }
 
     public String getPassword() {

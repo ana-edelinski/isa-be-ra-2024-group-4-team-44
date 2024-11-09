@@ -2,6 +2,8 @@ package rs.ac.uns.ftn.informatika.jpa.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -10,7 +12,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User creator;
 
@@ -23,20 +25,27 @@ public class Post {
     @Column(name = "image_path", unique = false, nullable = false)
     private String imagePath;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Address location;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Like> likes = new ArrayList<>();
 
     public Post() {}
 
-    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location) {
+    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, List<Comment> comments, List<Like> likes) {
         this.id = id;
         this.creator = creator;
         this.description = description;
         this.creationTime = creationTime;
         this.imagePath = imagePath;
         this.location = location;
+        this.comments = comments;
+        this.likes = likes;
     }
 
     public Integer getId() {
@@ -85,5 +94,21 @@ public class Post {
 
     public void setLocation(Address location) {
         this.location = location;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
     }
 }

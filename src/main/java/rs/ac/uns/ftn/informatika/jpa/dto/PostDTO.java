@@ -2,6 +2,8 @@ package rs.ac.uns.ftn.informatika.jpa.dto;
 
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PostDTO {
 
@@ -15,12 +17,14 @@ public class PostDTO {
     private String locationStreet;
     private String locationCity;
     private String locationPostalCode;
+    private List<CommentDTO> comments;
+    private int likeCount;
 
     public PostDTO() {}
 
     public PostDTO(Integer id, Integer creatorId, String creatorUsername, String description,
                    LocalDateTime creationTime, String imagePath, Integer locationId,
-                   String locationStreet, String locationCity, String locationPostalCode) {
+                   String locationStreet, String locationCity, String locationPostalCode, List<CommentDTO> comments, int likeCount) {
         this.id = id;
         this.creatorId = creatorId;
         this.creatorUsername = creatorUsername;
@@ -31,6 +35,8 @@ public class PostDTO {
         this.locationStreet = locationStreet;
         this.locationCity = locationCity;
         this.locationPostalCode = locationPostalCode;
+        this.comments = comments;
+        this.likeCount = likeCount;
     }
 
     public PostDTO(Post post) {
@@ -47,6 +53,11 @@ public class PostDTO {
             this.locationCity = post.getLocation().getCity();
             this.locationPostalCode = post.getLocation().getPostalCode();
         }
+
+        this.likeCount = post.getLikes().size();
+        this.comments = post.getComments().stream()
+                .map(CommentDTO::new)
+                .collect(Collectors.toList());
     }
 
     public Integer getId() {
@@ -87,5 +98,13 @@ public class PostDTO {
 
     public String getLocationPostalCode() {
         return locationPostalCode;
+    }
+
+    public List<CommentDTO> getComments() {
+        return comments;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
     }
 }

@@ -20,6 +20,7 @@ rs\ac\uns\ftn\informatika\jpa\model\Student.class
 rs\ac\uns\ftn\informatika\jpa\dto\ExamDTO.class
 rs\ac\uns\ftn\informatika\jpa\model\User.class
 rs\ac\uns\ftn\informatika\jpa\repository\UserRepository.class
+rs\ac\uns\ftn\informatika\jpa\model\Address.class
 rs\ac\uns\ftn\informatika\jpa\service\EmailService.class
 rs\ac\uns\ftn\informatika\jpa\model\SecurityConfig.class
 rs\ac\uns\ftn\informatika\jpa\service\StudentService.class

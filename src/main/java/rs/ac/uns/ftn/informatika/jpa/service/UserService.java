@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.NoSuchElementException;
 
 @Service
 public class UserService {
@@ -111,4 +113,50 @@ public class UserService {
 
         return ResponseEntity.ok("Korisnik je uspešno aktiviran.");
     }
+
+    public boolean changePassword(Integer userId, ChangePasswordDTO changePasswordDTO) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        if (!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword())) {
+            throw new IllegalArgumentException("New passwords do not match");
+        }
+
+        user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        userRepository.save(user);
+
+        return true;
+    }
+
+    public UserDTO getUserProfile(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        return new UserDTO(user);
+    }
+
+    public User updateUserProfile(Integer userId, UserDTO userProfileUpdateDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        user.setName(userProfileUpdateDto.getName());
+        user.setSurname(userProfileUpdateDto.getSurname());
+
+        Address address = user.getAddress();
+        if (address == null) {
+            address = new Address();
+        }
+
+        address.setStreet(userProfileUpdateDto.getStreet());
+        address.setCity(userProfileUpdateDto.getCity());
+        address.setPostalCode(userProfileUpdateDto.getPostalCode());
+
+        user.setAddress(address);
+
+        return userRepository.save(user);
+    }
+
 }
