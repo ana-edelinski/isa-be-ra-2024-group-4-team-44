@@ -12,6 +12,8 @@ import rs.ac.uns.ftn.informatika.jpa.repository.LikeRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,32 @@ public class PostService {
                 post.getComments().stream().map(CommentDTO::new).collect(Collectors.toList()),
                 likeCount
         );
+    }
+
+    public List<PostDTO> getAllPosts() {
+        System.out.println("Usao u servis.");
+        List<PostDTO> postDTOS = new ArrayList<>();
+        List<Post> posts = postRepository.findAll();
+        for(Post post : posts) {
+            int likeCount = likeRepository.countByPostId(post.getId());
+            PostDTO postDTO = new PostDTO(
+                    post.getId(),
+                    post.getCreator().getId(),
+                    post.getCreator().getUsername(),
+                    post.getDescription(),
+                    post.getCreationTime(),
+                    post.getImagePath(),
+                    post.getLocation() != null ? post.getLocation().getId() : null,
+                    post.getLocation() != null ? post.getLocation().getStreet() : null,
+                    post.getLocation() != null ? post.getLocation().getCity() : null,
+                    post.getLocation() != null ? post.getLocation().getPostalCode() : null,
+                    post.getComments().stream().map(CommentDTO::new).collect(Collectors.toList()),
+                    likeCount
+            );
+            postDTOS.add(postDTO);
+        }
+
+       return postDTOS;
     }
 
     public PostDTO createPost(PostDTO postDTO) {
