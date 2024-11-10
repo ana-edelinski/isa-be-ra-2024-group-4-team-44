@@ -3,7 +3,9 @@ package rs.ac.uns.ftn.informatika.jpa.model;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -33,11 +35,11 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
-    private List<Like> likes = new ArrayList<>();
+    private Set<Like> likes = new HashSet<>();
 
     public Post() {}
 
-    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, List<Comment> comments, List<Like> likes) {
+    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, List<Comment> comments, Set<Like> likes) {
         this.id = id;
         this.creator = creator;
         this.description = description;
@@ -104,11 +106,11 @@ public class Post {
         this.comments = comments;
     }
 
-    public List<Like> getLikes() {
+    public Set<Like> getLikes() {
         return likes;
     }
 
-    public void setLikes(List<Like> likes) {
+    public void setLikes(Set<Like> likes) {
         this.likes = likes;
     }
 }
