@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,6 +33,19 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("")
+    public ResponseEntity<List<PostDTO>> getAllPosts() {
+        try {
+            System.out.println("Usao u kontroler.");
+            List<PostDTO> posts = postService.getAll();
+            return new ResponseEntity<>(posts, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
     @PostMapping()
     public ResponseEntity<PostDTO> cratePost(

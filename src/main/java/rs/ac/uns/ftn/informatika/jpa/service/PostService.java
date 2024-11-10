@@ -12,6 +12,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.LikeRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -50,6 +51,8 @@ public class PostService {
                 likeCount
         );
     }
+
+   
 
     public PostDTO createPost(PostDTO postDTO) {
         Post post = new Post();
@@ -102,6 +105,14 @@ public class PostService {
 
     public List<PostDTO> getUserPostsByUserId(Integer userId) {
         List<Post> userPosts = postRepository.findByUserIdWithComments(userId);
+
+        return userPosts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostDTO> getAll() {
+        List<Post> userPosts = postRepository.findAll();
 
         return userPosts.stream()
                 .map(PostDTO::new)
