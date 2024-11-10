@@ -135,4 +135,9 @@ public class PostController {
         }
     }
 
+    @GetMapping("/{postId}/likes/count")
+    public int getLikesCount(@PathVariable Integer postId) {
+        return postService.getLikesCountByPostId(postId);
+    }
+
 }

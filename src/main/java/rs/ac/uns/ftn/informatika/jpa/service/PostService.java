@@ -119,4 +119,8 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    public int getLikesCountByPostId(Integer postId) {
+        return likeRepository.countByPostId(postId);
+    }
+
 }
