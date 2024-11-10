@@ -33,7 +33,7 @@ public class PostService {
     private AddressRepository addressRepository;
 
     public PostDTO getById(Integer id) {
-        Post post = postRepository.getById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.getPostById(id).orElseThrow(() -> new RuntimeException("Post not found"));
         int likeCount = likeRepository.countByPostId(id);
         String formattedImagePath = post.getImagePath().replace("src\\main\\resources\\static\\", "/");
         return new PostDTO(
