@@ -140,4 +140,16 @@ public class PostController {
         return postService.getLikesCountByPostId(postId);
     }
 
+    @PutMapping("/{postId}/like")
+    public ResponseEntity<Void> likeUnlikePost(@PathVariable Integer postId, @RequestParam Integer userId) {
+        try {
+            postService.likeUnlikePost(postId, userId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
 }
