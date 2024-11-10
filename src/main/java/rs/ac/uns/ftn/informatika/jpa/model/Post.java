@@ -32,14 +32,14 @@ public class Post {
     private Address location;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Comment> comments = new ArrayList<>();
+    private Set<Comment> comments = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<Like> likes = new HashSet<>();
 
     public Post() {}
 
-    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, List<Comment> comments, Set<Like> likes) {
+    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, Set<Comment> comments, Set<Like> likes) {
         this.id = id;
         this.creator = creator;
         this.description = description;
@@ -98,11 +98,11 @@ public class Post {
         this.location = location;
     }
 
-    public List<Comment> getComments() {
+    public Set<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(Set<Comment> comments) {
         this.comments = comments;
     }
 
