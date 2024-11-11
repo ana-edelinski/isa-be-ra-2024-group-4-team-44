@@ -34,4 +34,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "GROUP BY u.id")
     List<UserInfoDTO> findAllUserInfo();
 
+    @Query("SELECT u FROM User u WHERE " +
+            "(:name IS NULL OR u.name = :name) AND " +
+            "(:surname IS NULL OR u.surname = :surname) AND " +
+            "(:email IS NULL OR u.email = :email) AND " +
+            "(:minPosts IS NULL OR SIZE(u.posts) >= :minPosts) AND " +
+            "(:maxPosts IS NULL OR SIZE(u.posts) <= :maxPosts)")
+    List<User> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts);
+
 }

@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.informatika.jpa.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
@@ -56,5 +57,16 @@ public class UserController {
     public ResponseEntity<List<UserInfoDTO>> getAllUsersInfo() {
         List<UserInfoDTO> usersInfo = userService.getAllUsersInfo();
         return ResponseEntity.ok(usersInfo);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUsers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String surname,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Integer minPosts,
+            @RequestParam(required = false) Integer maxPosts) {
+        List<User> users = userService.searchUsers(name, surname, email, minPosts, maxPosts);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

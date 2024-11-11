@@ -166,4 +166,9 @@ public class UserService {
         return userRepository.findAllUserInfo();
     }
 
+    public List<User> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
+        return userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
+    }
+
+
 }
