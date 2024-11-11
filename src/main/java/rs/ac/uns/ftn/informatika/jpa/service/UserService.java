@@ -24,6 +24,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 
         this.userRepository = userRepository;
@@ -61,6 +64,7 @@ public class UserService {
         user.setName(userDto.getName());
         user.setSurname(userDto.getSurname());
         user.setActivated(false);
+        user.setEnabled(true);
 
         String activationToken = UUID.randomUUID().toString();
         user.setActivationToken(activationToken);
