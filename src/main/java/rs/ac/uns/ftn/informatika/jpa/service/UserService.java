@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import rs.ac.uns.ftn.informatika.jpa.dto.SearchUsersDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
@@ -166,8 +167,18 @@ public class UserService {
         return userRepository.findAllUserInfo();
     }
 
-    public List<User> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
-        return userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
+    public List<SearchUsersDTO> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
+        List<User> users = userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
+        List<SearchUsersDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();  // Broj postova
+            Integer numberOfFollowing = user.getFollowing().size();  // Broj sledbenika
+            SearchUsersDTO userDTO = new SearchUsersDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+
+        return userDTOs;
     }
 
 

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.informatika.jpa.dto.SearchUsersDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
@@ -60,13 +61,13 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsers(
+    public ResponseEntity<List<SearchUsersDTO>> searchUsers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String surname,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) Integer minPosts,
             @RequestParam(required = false) Integer maxPosts) {
-        List<User> users = userService.searchUsers(name, surname, email, minPosts, maxPosts);
+        List<SearchUsersDTO> users = userService.searchUsers(name, surname, email, minPosts, maxPosts);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }
