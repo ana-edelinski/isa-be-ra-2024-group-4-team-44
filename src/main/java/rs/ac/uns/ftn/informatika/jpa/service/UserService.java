@@ -8,6 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserTokenState;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
@@ -25,6 +27,8 @@ import java.util.*;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -126,37 +130,24 @@ public class UserService implements UserDetailsService {
 //        response.put("user", new UserDTO(user));
 //        return ResponseEntity.ok(response);
 //    }
-public ResponseEntity<?> login(UserDTO userDto) {
-    // Pronađite korisnika po email adresi
-    Optional<User> userOptional = userRepository.findByEmail(userDto.getEmail());
+public ResponseEntity<UserTokenState> login(
+        @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
+    // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
+    // AuthenticationException
+    Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+            authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
-    // Proverite da li korisnik postoji
-    if (!userOptional.isPresent()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ne postoji korisnik sa tim email-om.");
-    }
+    // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security
+    // kontekst
+    SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    User user = userOptional.get();
-
-    // Proverite da li lozinka odgovara
-    if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neispravna lozinka");
-    }
-
-    // Proverite da li je korisnik aktiviran
-    if (!user.isActivated()) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nalog nije aktiviran");
-    }
-
-    // Generišite JWT token
-    String jwt = tokenUtils.generateToken(user.getEmail()); // Koristite email za generisanje tokena
+    // Kreiraj token za tog korisnika
+    User user = (User) authentication.getPrincipal();
+    String jwt = tokenUtils.generateToken(user.getUsername());
     int expiresIn = tokenUtils.getExpiredIn();
 
-    Map<String, Object> response = new HashMap<>();
-    response.put("token", jwt);
-    response.put("expiresIn", expiresIn);
-    response.put("userId", user.getId());
-
-    return ResponseEntity.ok(response);
+    // Vrati token kao odgovor na uspesnu autentifikaciju
+    return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user.getId()));
 }
 
 
