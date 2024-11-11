@@ -2,7 +2,6 @@ package rs.ac.uns.ftn.informatika.jpa.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import java.util.List;
@@ -26,13 +25,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByEmail(String email);
 
     Optional<User> findByActivationToken(String activationToken);
-
-    @Query("SELECT new rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO(u.name, u.surname, u.email, SIZE(u.posts), SIZE(u.following)) " +
-            "FROM User u " +
-            "LEFT JOIN u.posts p " +
-            "LEFT JOIN u.following f " +
-            "GROUP BY u.id")
-    List<UserInfoDTO> findAllUserInfo();
 
     @Query("SELECT u FROM User u WHERE " +
             "(:name IS NULL OR u.name = :name) AND " +

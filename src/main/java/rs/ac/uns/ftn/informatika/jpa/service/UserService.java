@@ -2,11 +2,10 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import rs.ac.uns.ftn.informatika.jpa.dto.SearchUsersDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,17 +163,28 @@ public class UserService {
     }
 
     public List<UserInfoDTO> getAllUsersInfo() {
-        return userRepository.findAllUserInfo();
+        List<User> users = userRepository.findAll();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+
+        return userDTOs;
     }
 
-    public List<SearchUsersDTO> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
+
+    public List<UserInfoDTO> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
         List<User> users = userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
-        List<SearchUsersDTO> userDTOs = new ArrayList<>();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
 
         for (User user : users) {
             Integer numberOfPosts = user.getPosts().size();  // Broj postova
             Integer numberOfFollowing = user.getFollowing().size();  // Broj sledbenika
-            SearchUsersDTO userDTO = new SearchUsersDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
             userDTOs.add(userDTO);
         }
 

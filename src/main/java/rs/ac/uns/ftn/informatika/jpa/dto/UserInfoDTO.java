@@ -1,18 +1,38 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
 
 public class UserInfoDTO {
+    private Integer id;
+    private String username;
     private String name;
     private String surname;
     private String email;
-    private int postCount;
-    private int followingCount;
+    private Integer numberOfPosts;
+    private Integer numberOfFollowing;
 
-    public UserInfoDTO(String name, String surname, String email, int postCount, int followingCount) {
+    public UserInfoDTO(Integer id, String username, String name, String surname, String email, Integer numberOfPosts, Integer numberOfFollowing) {
+        this.id = id;
+        this.username = username;
         this.name = name;
         this.surname = surname;
         this.email = email;
-        this.postCount = postCount;
-        this.followingCount = followingCount;
+        this.numberOfPosts = numberOfPosts;
+        this.numberOfFollowing = numberOfFollowing;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {
@@ -39,20 +59,21 @@ public class UserInfoDTO {
         this.email = email;
     }
 
-    public int getPostCount() {
-        return postCount;
+    public Integer getNumberOfPosts() {
+        return numberOfPosts;
     }
 
-    public void setPostCount(int postCount) {
-        this.postCount = postCount;
+    public void setNumberOfPosts(Integer numberOfPosts) {
+        this.numberOfPosts = numberOfPosts;
     }
 
-    public int getFollowingCount() {
-        return followingCount;
+    public Integer getNumberOfFollowing() {
+        return numberOfFollowing;
     }
 
-    public void setFollowingCount(int followingCount) {
-        this.followingCount = followingCount;
+    public void setNumberOfFollowing(Integer numberOfFollowing) {
+        this.numberOfFollowing = numberOfFollowing;
     }
-
 }
+
+
