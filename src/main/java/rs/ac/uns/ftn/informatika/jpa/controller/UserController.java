@@ -4,10 +4,13 @@ package rs.ac.uns.ftn.informatika.jpa.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -47,5 +50,11 @@ public class UserController {
     public ResponseEntity<User> updateUserProfile(@PathVariable Integer id, @RequestBody UserDTO userProfileUpdateDto) {
         User updatedUser = userService.updateUserProfile(id, userProfileUpdateDto);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/registered")
+    public ResponseEntity<List<UserInfoDTO>> getAllUsersInfo() {
+        List<UserInfoDTO> usersInfo = userService.getAllUsersInfo();
+        return ResponseEntity.ok(usersInfo);
     }
 }

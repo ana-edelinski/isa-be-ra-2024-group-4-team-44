@@ -5,17 +5,15 @@ import org.springframework.http.ResponseEntity;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.NoSuchElementException;
+
+import java.util.*;
 
 @Service
 public class UserService {
@@ -162,6 +160,10 @@ public class UserService {
         user.setAddress(address);
 
         return userRepository.save(user);
+    }
+
+    public List<UserInfoDTO> getAllUsersInfo() {
+        return userRepository.findAllUserInfo();
     }
 
 }
