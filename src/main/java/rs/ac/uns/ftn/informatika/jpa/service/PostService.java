@@ -13,6 +13,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.LikeRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -95,6 +96,7 @@ public class PostService {
         return getById(id);
     }
 
+    @Transactional
     public void deletePost(Integer id, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -102,6 +104,8 @@ public class PostService {
             throw new RuntimeException("User not authorized to delete this post");
         }
 
+        postRepository.deleteCommentsByPostId(id);
+        postRepository.deleteLikesByPostId(id);
         postRepository.deletePostById(id);
     }
 
