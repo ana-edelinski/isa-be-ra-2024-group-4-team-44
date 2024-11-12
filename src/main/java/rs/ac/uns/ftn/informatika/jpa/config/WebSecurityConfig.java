@@ -83,7 +83,7 @@ public class WebSecurityConfig {
 				.and()
 				.authorizeRequests()
 //				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**", "/api/users/*/profile", "/api/users/*/changePassword", "").permitAll()
-				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**","/api/users/*/profile", "/api/users/*", "/api/posts" ).permitAll()
+				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**","/api/users/*/profile", "/api/users/*", "/api/users/role/*","/api/posts", "/api/images/*" ).permitAll()
 				.antMatchers(HttpMethod.PUT, "/api/users/{id}/profile").hasAuthority("USER")
 				.antMatchers(HttpMethod.GET, "/api/users/{id}/profile").hasAuthority("USER")
 				.antMatchers(HttpMethod.GET, "/api/posts/user/{userId}").hasAuthority("USER")
@@ -123,7 +123,7 @@ public class WebSecurityConfig {
 
     			// Ovim smo dozvolili pristup statickim resursima aplikacije
     			.antMatchers(HttpMethod.GET, "/", "/webjars/**", "/*.html", "favicon.ico",
-    			"/**/*.html", "/**/*.css", "/**/*.js");
+    			"/**/*.html", "/**/*.css", "/**/*.js", "/images/**");
 
     }
 
