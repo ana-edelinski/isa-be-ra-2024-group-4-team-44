@@ -199,21 +199,7 @@ public class User implements UserDetails {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
-
-
-    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate)
-    {
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
+    
 
     public Set<User> getFollowing() {
         return following;
@@ -229,39 +215,6 @@ public class User implements UserDetails {
 
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
-    }
-
-    @JsonIgnore
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
 
