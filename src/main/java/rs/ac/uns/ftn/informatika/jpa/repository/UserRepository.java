@@ -30,12 +30,17 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByActivationToken(String activationToken);
 
     @Query("SELECT u FROM User u WHERE " +
-            "(:name = '' OR LOWER(u.name) = LOWER(:name)) AND " +
-            "(:surname = '' OR LOWER(u.surname) = LOWER(:surname)) AND " +
-            "(:email = '' OR LOWER(u.email) = LOWER(:email)) AND " +
+            "(:name = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "(:surname = '' OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) AND " +
+            "(:email = '' OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
             "(:minPosts = 0 OR SIZE(u.posts) >= :minPosts) AND " +
             "(:maxPosts = 2147483647 OR SIZE(u.posts) <= :maxPosts)")
-    List<User> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts);
+    List<User> searchUsers(@Param("name") String name,
+                           @Param("surname") String surname,
+                           @Param("email") String email,
+                           @Param("minPosts") Integer minPosts,
+                           @Param("maxPosts") Integer maxPosts);
+
 
 
     @Query("SELECT u FROM User u ORDER BY SIZE(u.following) ASC")
