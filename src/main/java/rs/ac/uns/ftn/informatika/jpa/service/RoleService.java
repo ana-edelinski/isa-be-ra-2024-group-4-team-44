@@ -21,4 +21,6 @@ public class RoleService {
 		List<Role> roles = this.roleRepository.findByName(name);
 		return roles;
 	}
+
 }
+

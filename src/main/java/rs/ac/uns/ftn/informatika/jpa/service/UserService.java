@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserTokenState;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
@@ -19,16 +21,14 @@ import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
-
 import java.util.*;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
-
 import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+
 
 @Service
 public class UserService implements UserDetailsService {
@@ -219,4 +219,97 @@ public ResponseEntity<UserTokenState> login(
             return user;
         }
     }
+
+    public List<UserInfoDTO> getAllUsersInfo() {
+        List<User> users = userRepository.findAll();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+
+        return userDTOs;
+    }
+
+
+    public List<UserInfoDTO> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
+        // Osiguraj da su parametri prazni stringovi ako nisu prosleđeni
+        name = (name != null && !name.isEmpty()) ? name : "";
+        surname = (surname != null && !surname.isEmpty()) ? surname : "";
+        email = (email != null && !email.isEmpty()) ? email : "";
+        minPosts = (minPosts != null && minPosts > 0) ? minPosts : 0;
+        maxPosts = (maxPosts != null && maxPosts > 0) ? maxPosts : Integer.MAX_VALUE; 
+
+        List<User> users = userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+
+        return userDTOs;
+    }
+
+
+
+    public List<UserInfoDTO> getUsersSortedByFollowingCountAsc() {
+        List<User> users = userRepository.findAllSortedByFollowingCountAsc();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+
+        return userDTOs;
+    }
+
+
+    public List<UserInfoDTO> getUsersSortedByFollowingCountDesc() {
+        List<User> users = userRepository.findAllSortedByFollowingCountDesc();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+        return userDTOs;
+    }
+
+    public List<UserInfoDTO> getUsersSortedByEmailAsc() {
+        List<User> users = userRepository.findAllSortedByEmailAsc();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+        return userDTOs;
+    }
+
+    public List<UserInfoDTO> getUsersSortedByEmailDesc() {
+        List<User> users = userRepository.findAllSortedByEmailDesc();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+        return userDTOs;
+    }
+
 }
