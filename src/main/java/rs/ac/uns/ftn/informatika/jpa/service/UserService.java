@@ -179,6 +179,13 @@ public class UserService {
 
 
     public List<UserInfoDTO> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
+        // Osiguraj da su parametri prazni stringovi ako nisu prosleđeni
+        name = (name != null && !name.isEmpty()) ? name : "";
+        surname = (surname != null && !surname.isEmpty()) ? surname : "";
+        email = (email != null && !email.isEmpty()) ? email : "";
+        minPosts = (minPosts != null && minPosts > 0) ? minPosts : 0;
+        maxPosts = (maxPosts != null && maxPosts > 0) ? maxPosts : Integer.MAX_VALUE; 
+
         List<User> users = userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
         List<UserInfoDTO> userDTOs = new ArrayList<>();
 
@@ -191,6 +198,8 @@ public class UserService {
 
         return userDTOs;
     }
+
+
 
     public List<UserInfoDTO> getUsersSortedByFollowingCountAsc() {
         List<User> users = userRepository.findAllSortedByFollowingCountAsc();
