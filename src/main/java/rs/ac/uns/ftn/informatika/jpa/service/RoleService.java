@@ -8,17 +8,17 @@ import java.util.List;
 @Service
 public class RoleService {
 
-    @Autowired
-    private RoleRepository roleRepository;
+	@Autowired
+	private RoleRepository roleRepository;
 
 
-    public Role findById(Long id) {
-        Role auth = this.roleRepository.getOne(id);
-        return auth;
-    }
+	public Role findById(Long id) {
+		Role auth = this.roleRepository.getOne(id);
+		return auth;
+	}
 
-    public List<Role> findByName(String name) {
-        List<Role> roles = this.roleRepository.findByName(name);
-        return roles;
-    }
+	public List<Role> findByName(String name) {
+		List<Role> roles = this.roleRepository.findByName(name);
+		return roles;
+	}
 }

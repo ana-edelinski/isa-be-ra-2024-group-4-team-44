@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: rs.ac.uns.ftn.informatika.jpa.JpaExampleApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.009 s - in rs.ac.uns.ftn.informatika.jpa.JpaExampleApplicationTests
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.943 s - in rs.ac.uns.ftn.informatika.jpa.JpaExampleApplicationTests

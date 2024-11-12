@@ -1,20 +1,27 @@
 package rs.ac.uns.ftn.informatika.jpa.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
-
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(value ="/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
+
 public class UserController {
     @Autowired
     private UserService userService;
@@ -25,9 +32,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO userDto) {
-        return userService.login(userDto);
+    public ResponseEntity<?> login(@RequestBody UserDTO userDto, HttpServletResponse response) {
+        // Kreiraj JwtAuthenticationRequest sa podacima iz UserDTO
+        JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest(userDto.getUsername(), userDto.getPassword());
+
+        // Pozovi servisnu metodu koja prihvata JwtAuthenticationRequest
+        return userService.login(authenticationRequest, response);
     }
+
 
     @GetMapping("/activate/{token}")
     public ResponseEntity<?> activateUser(@PathVariable String token) {
@@ -35,19 +47,27 @@ public class UserController {
     }
 
     @PutMapping("/{id}/changePassword")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<?> changePassword(@PathVariable Integer id, @RequestBody ChangePasswordDTO changePasswordDTO) {
         userService.changePassword(id, changePasswordDTO);
         return ResponseEntity.ok("Password updated successfully");
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable Integer id) {
+        UserDTO userProfileDto = userService.getUserProfile(id);
+        return ResponseEntity.ok(userProfileDto);
+    }
 
     @GetMapping("/{id}/profile")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<UserDTO> getUserProfile(@PathVariable Integer id) {
         UserDTO userProfileDto = userService.getUserProfile(id);
         return ResponseEntity.ok(userProfileDto);
     }
 
     @PutMapping("/{id}/profile")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<User> updateUserProfile(@PathVariable Integer id, @RequestBody UserDTO userProfileUpdateDto) {
         User updatedUser = userService.updateUserProfile(id, userProfileUpdateDto);
         return ResponseEntity.ok(updatedUser);
@@ -90,4 +110,10 @@ public class UserController {
         return userService.getUsersSortedByEmailDesc();
     }
 
+    @GetMapping("/foo")
+    public Map<String, String> getFoo() {
+        Map<String, String> fooObj = new HashMap<>();
+        fooObj.put("foo", "bar");
+        return fooObj;
+    }
 }

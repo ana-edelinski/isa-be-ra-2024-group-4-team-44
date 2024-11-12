@@ -7,5 +7,5 @@ import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import java.util.List;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    List<Role> findByName(String name);
+	List<Role> findByName(String name);
 }
