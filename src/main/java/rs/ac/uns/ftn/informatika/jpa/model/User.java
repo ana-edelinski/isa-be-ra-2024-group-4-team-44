@@ -15,8 +15,6 @@ import java.util.Set;
 @Table(name = "users")
 public class User implements UserDetails {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -70,7 +68,6 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "following_id")
     )
     private Set<User> following = new HashSet<>();
-
 
     public User (Integer id, String username, String name, String surname, String email, String password, boolean activated, Address address)
     {
@@ -201,6 +198,7 @@ public class User implements UserDetails {
     }
     
 
+
     public Set<User> getFollowing() {
         return following;
     }
@@ -216,7 +214,5 @@ public class User implements UserDetails {
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
     }
-
-
 
 }

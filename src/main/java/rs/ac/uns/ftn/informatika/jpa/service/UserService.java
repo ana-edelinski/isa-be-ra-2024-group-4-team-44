@@ -2,7 +2,7 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;   
+import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +26,7 @@ import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
 import javax.servlet.http.HttpServletResponse;
+
 
 @Service
 public class UserService implements UserDetailsService {
@@ -208,6 +209,15 @@ public ResponseEntity<UserTokenState> login(
         return userRepository.save(user);
     }
 
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+        } else {
+            return user;
+        }
+    }
+
     public List<UserInfoDTO> getAllUsersInfo() {
         List<User> users = userRepository.findAll();
         List<UserInfoDTO> userDTOs = new ArrayList<>();
@@ -300,14 +310,8 @@ public ResponseEntity<UserTokenState> login(
         return userDTOs;
     }
 
-
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        } else {
-            return user;
-        }
+    public Integer getRole(Integer userId){
+        return userRepository.findRoleIdByUserId(userId);
     }
 
 }

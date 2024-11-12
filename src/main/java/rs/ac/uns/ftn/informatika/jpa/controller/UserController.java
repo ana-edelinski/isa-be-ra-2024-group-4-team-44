@@ -1,22 +1,28 @@
 package rs.ac.uns.ftn.informatika.jpa.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
+
+import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
-import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -73,6 +79,13 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    @GetMapping("/foo")
+    public Map<String, String> getFoo() {
+        Map<String, String> fooObj = new HashMap<>();
+        fooObj.put("foo", "bar");
+        return fooObj;
+    }
+
     @GetMapping("/registered")
     public ResponseEntity<List<UserInfoDTO>> getAllUsersInfo() {
         List<UserInfoDTO> usersInfo = userService.getAllUsersInfo();
@@ -110,10 +123,10 @@ public class UserController {
         return userService.getUsersSortedByEmailDesc();
     }
 
-    @GetMapping("/foo")
-    public Map<String, String> getFoo() {
-        Map<String, String> fooObj = new HashMap<>();
-        fooObj.put("foo", "bar");
-        return fooObj;
+    @GetMapping("/role/{id}")
+    public Integer getRole(@PathVariable Integer id){
+        Integer role = userService.getRole(id);
+        return role;
     }
+
 }
