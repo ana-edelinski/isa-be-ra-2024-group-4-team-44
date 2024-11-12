@@ -310,4 +310,8 @@ public ResponseEntity<UserTokenState> login(
         }
     }
 
+    public Integer getRole(Integer userId){
+        return userRepository.findRoleIdByUserId(userId);
+    }
+
 }

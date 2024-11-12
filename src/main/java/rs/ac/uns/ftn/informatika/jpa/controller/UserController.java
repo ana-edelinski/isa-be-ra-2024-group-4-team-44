@@ -116,4 +116,10 @@ public class UserController {
         fooObj.put("foo", "bar");
         return fooObj;
     }
+
+    @GetMapping("/role/{id}")
+    public Integer getRole(@PathVariable Integer id){
+        Integer role = userService.getRole(id);
+        return role;
+    }
 }

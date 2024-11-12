@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.informatika.jpa.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import java.util.List;
@@ -47,4 +48,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u ORDER BY u.email DESC")
     List<User> findAllSortedByEmailDesc();
 
+    @Query(value = "SELECT ur.role_id FROM user_role ur WHERE ur.user_id = :userId", nativeQuery = true)
+    Integer findRoleIdByUserId(@Param("userId") Integer userId);
 }
