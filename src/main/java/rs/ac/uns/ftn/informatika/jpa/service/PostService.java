@@ -102,7 +102,7 @@ public class PostService {
             throw new RuntimeException("User not authorized to delete this post");
         }
 
-        postRepository.deleteById(id);
+        postRepository.deletePostById(id);
     }
 
     public List<PostDTO> getUserPostsByUserId(Integer userId) {
