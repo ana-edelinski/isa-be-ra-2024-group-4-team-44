@@ -71,22 +71,22 @@ public class UserController {
     }
 
     @GetMapping("/sort/following/asc")
-    public List<User> getUsersSortedByFollowingAsc() {
+    public List<UserInfoDTO> getUsersSortedByFollowingAsc() {
         return userService.getUsersSortedByFollowingCountAsc();
     }
 
     @GetMapping("/sort/following/desc")
-    public List<User> getUsersSortedByFollowingDesc() {
+    public List<UserInfoDTO> getUsersSortedByFollowingDesc() {
         return userService.getUsersSortedByFollowingCountDesc();
     }
 
     @GetMapping("/sort/email/asc")
-    public List<User> getUsersSortedByEmailAsc() {
+    public List<UserInfoDTO> getUsersSortedByEmailAsc() {
         return userService.getUsersSortedByEmailAsc();
     }
 
     @GetMapping("/sort/email/desc")
-    public List<User> getUsersSortedByEmailDesc() {
+    public List<UserInfoDTO> getUsersSortedByEmailDesc() {
         return userService.getUsersSortedByEmailDesc();
     }
 

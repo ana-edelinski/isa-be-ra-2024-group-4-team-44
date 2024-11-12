@@ -183,8 +183,8 @@ public class UserService {
         List<UserInfoDTO> userDTOs = new ArrayList<>();
 
         for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();  // Broj postova
-            Integer numberOfFollowing = user.getFollowing().size();  // Broj sledbenika
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
             UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
             userDTOs.add(userDTO);
         }
@@ -192,20 +192,58 @@ public class UserService {
         return userDTOs;
     }
 
-    public List<User> getUsersSortedByFollowingCountAsc() {
-        return userRepository.findAllSortedByFollowingCountAsc();
+    public List<UserInfoDTO> getUsersSortedByFollowingCountAsc() {
+        List<User> users = userRepository.findAllSortedByFollowingCountAsc();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+
+        return userDTOs;
     }
 
-    public List<User> getUsersSortedByFollowingCountDesc() {
-        return userRepository.findAllSortedByFollowingCountDesc();
+
+    public List<UserInfoDTO> getUsersSortedByFollowingCountDesc() {
+        List<User> users = userRepository.findAllSortedByFollowingCountDesc();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+        return userDTOs;
     }
 
-    public List<User> getUsersSortedByEmailAsc() {
-        return userRepository.findAllSortedByEmailAsc();
+    public List<UserInfoDTO> getUsersSortedByEmailAsc() {
+        List<User> users = userRepository.findAllSortedByEmailAsc();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+        return userDTOs;
     }
 
-    public List<User> getUsersSortedByEmailDesc() {
-        return userRepository.findAllSortedByEmailDesc();
+    public List<UserInfoDTO> getUsersSortedByEmailDesc() {
+        List<User> users = userRepository.findAllSortedByEmailDesc();
+        List<UserInfoDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            Integer numberOfPosts = user.getPosts().size();
+            Integer numberOfFollowing = user.getFollowing().size();
+            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
+            userDTOs.add(userDTO);
+        }
+        return userDTOs;
     }
 
 
