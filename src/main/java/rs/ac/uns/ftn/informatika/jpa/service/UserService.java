@@ -1,8 +1,8 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserTokenState;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
@@ -27,7 +26,6 @@ import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
 
 
 @Service
@@ -310,6 +308,10 @@ public ResponseEntity<UserTokenState> login(
             userDTOs.add(userDTO);
         }
         return userDTOs;
+    }
+
+    public Integer getRole(Integer userId){
+        return userRepository.findRoleIdByUserId(userId);
     }
 
 }

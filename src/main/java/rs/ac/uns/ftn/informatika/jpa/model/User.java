@@ -5,13 +5,11 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.sql.Timestamp;
-
+import java.util.*;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.*;
-
 
 @Entity
 @Table(name = "users")
@@ -195,6 +193,11 @@ public class User implements UserDetails {
         return enabled;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
+
 
     public Set<User> getFollowing() {
         return following;
@@ -211,12 +214,5 @@ public class User implements UserDetails {
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
     }
-
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-
 
 }
