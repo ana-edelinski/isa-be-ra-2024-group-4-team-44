@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
@@ -190,6 +191,23 @@ public class UserService {
 
         return userDTOs;
     }
+
+    public List<User> getUsersSortedByFollowingCountAsc() {
+        return userRepository.findAllSortedByFollowingCountAsc();
+    }
+
+    public List<User> getUsersSortedByFollowingCountDesc() {
+        return userRepository.findAllSortedByFollowingCountDesc();
+    }
+
+    public List<User> getUsersSortedByEmailAsc() {
+        return userRepository.findAllSortedByEmailAsc();
+    }
+
+    public List<User> getUsersSortedByEmailDesc() {
+        return userRepository.findAllSortedByEmailDesc();
+    }
+
 
 
 }

@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.repository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
@@ -33,5 +34,17 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "(:minPosts IS NULL OR SIZE(u.posts) >= :minPosts) AND " +
             "(:maxPosts IS NULL OR SIZE(u.posts) <= :maxPosts)")
     List<User> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts);
+
+    @Query("SELECT u FROM User u ORDER BY SIZE(u.following) ASC")
+    List<User> findAllSortedByFollowingCountAsc();
+
+    @Query("SELECT u FROM User u ORDER BY SIZE(u.following) DESC") 
+    List<User> findAllSortedByFollowingCountDesc();
+
+    @Query("SELECT u FROM User u ORDER BY u.email ASC")
+    List<User> findAllSortedByEmailAsc();
+
+    @Query("SELECT u FROM User u ORDER BY u.email DESC")
+    List<User> findAllSortedByEmailDesc();
 
 }

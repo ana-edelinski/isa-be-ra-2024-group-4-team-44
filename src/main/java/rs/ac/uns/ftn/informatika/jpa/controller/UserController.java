@@ -69,4 +69,25 @@ public class UserController {
         List<UserInfoDTO> users = userService.searchUsers(name, surname, email, minPosts, maxPosts);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+    @GetMapping("/sort/following/asc")
+    public List<User> getUsersSortedByFollowingAsc() {
+        return userService.getUsersSortedByFollowingCountAsc();
+    }
+
+    @GetMapping("/sort/following/desc")
+    public List<User> getUsersSortedByFollowingDesc() {
+        return userService.getUsersSortedByFollowingCountDesc();
+    }
+
+    @GetMapping("/sort/email/asc")
+    public List<User> getUsersSortedByEmailAsc() {
+        return userService.getUsersSortedByEmailAsc();
+    }
+
+    @GetMapping("/sort/email/desc")
+    public List<User> getUsersSortedByEmailDesc() {
+        return userService.getUsersSortedByEmailDesc();
+    }
+
 }
