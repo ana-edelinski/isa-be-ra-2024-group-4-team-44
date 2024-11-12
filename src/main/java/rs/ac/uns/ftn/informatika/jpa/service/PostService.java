@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
+import rs.ac.uns.ftn.informatika.jpa.model.Like;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.repository.AddressRepository;
@@ -15,6 +16,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,15 +35,16 @@ public class PostService {
     private AddressRepository addressRepository;
 
     public PostDTO getById(Integer id) {
-        Post post = postRepository.getById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.getPostById(id).orElseThrow(() -> new RuntimeException("Post not found"));
         int likeCount = likeRepository.countByPostId(id);
+        String formattedImagePath = post.getImagePath().replace("src\\main\\resources\\static\\", "/");
         return new PostDTO(
                 post.getId(),
                 post.getCreator().getId(),
                 post.getCreator().getUsername(),
                 post.getDescription(),
                 post.getCreationTime(),
-                post.getImagePath(),
+                formattedImagePath,
                 post.getLocation() != null ? post.getLocation().getId() : null,
                 post.getLocation() != null ? post.getLocation().getStreet() : null,
                 post.getLocation() != null ? post.getLocation().getCity() : null,
@@ -116,6 +119,30 @@ public class PostService {
         return userPosts.stream()
                 .map(PostDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    public int getLikesCountByPostId(Integer postId) {
+        return likeRepository.countByPostId(postId);
+    }
+
+    public void likeUnlikePost(Integer postId, Integer userId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // TODO: Da li da imamo ovo pravilo?
+        //if (post.getCreator().getId().equals(userId)) {
+            //throw new RuntimeException("User cannot like their own post");
+        //}
+
+        Optional<Like> existingLike = likeRepository.findByPostAndUser(post, user);
+        if (existingLike.isPresent()) {
+            likeRepository.delete(existingLike.get());
+        } else {
+            Like newLike = new Like();
+            newLike.setPost(post);
+            newLike.setUser(user);
+            likeRepository.save(newLike);
+        }
     }
 
 }
