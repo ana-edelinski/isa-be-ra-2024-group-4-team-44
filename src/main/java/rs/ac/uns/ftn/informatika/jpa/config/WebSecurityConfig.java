@@ -83,7 +83,7 @@ public class WebSecurityConfig {
 				.and()
 				.authorizeRequests()
 //				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**", "/api/users/*/profile", "/api/users/*/changePassword").permitAll()
-				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**","/api/users/*/profile", "/api/users/*" ).permitAll()
+				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**","/api/users/*/profile", "/api/users/*", "/api/images/*" ).permitAll()
 				.antMatchers(HttpMethod.PUT, "/api/users/{id}/profile").hasAuthority("USER")
 				.antMatchers(HttpMethod.GET, "/api/users/{id}/profile").hasAuthority("USER")
 				.antMatchers(HttpMethod.GET, "/api/posts/user/{userId}").hasAuthority("USER")
@@ -98,6 +98,7 @@ public class WebSecurityConfig {
 				.antMatchers(HttpMethod.GET, "/api/users/sort/following/desc").hasAuthority("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/users/sort/email/asc").hasAuthority("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/users/sort/email/desc").hasAuthority("ADMIN")
+				.antMatchers(HttpMethod.POST, "/api/posts/uploadImage").hasAuthority("USER")
 				.anyRequest().authenticated()
 				.and()
 				.cors()
@@ -121,7 +122,7 @@ public class WebSecurityConfig {
 
     			// Ovim smo dozvolili pristup statickim resursima aplikacije
     			.antMatchers(HttpMethod.GET, "/", "/webjars/**", "/*.html", "favicon.ico",
-    			"/**/*.html", "/**/*.css", "/**/*.js");
+    			"/**/*.html", "/**/*.css", "/**/*.js", "/images/**");
 
     }
 
