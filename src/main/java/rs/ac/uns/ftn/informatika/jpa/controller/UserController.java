@@ -33,6 +33,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
+
     public ResponseEntity<?> register(@RequestBody UserDTO userDto) {
         return userService.register(userDto);
     }
@@ -87,12 +88,14 @@ public class UserController {
     }
 
     @GetMapping("/registered")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserInfoDTO>> getAllUsersInfo() {
         List<UserInfoDTO> usersInfo = userService.getAllUsersInfo();
         return ResponseEntity.ok(usersInfo);
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserInfoDTO>> searchUsers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String surname,
@@ -104,21 +107,25 @@ public class UserController {
     }
 
     @GetMapping("/sort/following/asc")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public List<UserInfoDTO> getUsersSortedByFollowingAsc() {
         return userService.getUsersSortedByFollowingCountAsc();
     }
 
     @GetMapping("/sort/following/desc")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public List<UserInfoDTO> getUsersSortedByFollowingDesc() {
         return userService.getUsersSortedByFollowingCountDesc();
     }
 
     @GetMapping("/sort/email/asc")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public List<UserInfoDTO> getUsersSortedByEmailAsc() {
         return userService.getUsersSortedByEmailAsc();
     }
 
     @GetMapping("/sort/email/desc")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public List<UserInfoDTO> getUsersSortedByEmailDesc() {
         return userService.getUsersSortedByEmailDesc();
     }

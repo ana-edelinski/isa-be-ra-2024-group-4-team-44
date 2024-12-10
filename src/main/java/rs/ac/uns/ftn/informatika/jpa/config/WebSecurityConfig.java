@@ -14,12 +14,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.*;
 
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import rs.ac.uns.ftn.informatika.jpa.auth.RestAuthenticationEntryPoint;
 import rs.ac.uns.ftn.informatika.jpa.auth.TokenAuthenticationFilter;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
+import rs.ac.uns.ftn.informatika.jpa.service.impl.CustomUserDetailsService;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
 
 @Configuration
@@ -34,6 +36,9 @@ public class WebSecurityConfig {
 	@Autowired
 	@Lazy
 	private UserService userService;
+
+	@Bean
+	public UserDetailsService userDetailsService() { return new CustomUserDetailsService();}
 
 
 	// Implementacija PasswordEncoder-a koriscenjem BCrypt hashing funkcije.
@@ -84,28 +89,13 @@ public class WebSecurityConfig {
 				.authorizeRequests()
 //				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**", "/api/users/*/profile", "/api/users/*/changePassword", "").permitAll()
 				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**","/api/users/*/profile", "/api/users/*", "/api/users/role/*","/api/posts", "/api/images/*" , "/simulate-old-images", "/test-compress").permitAll()
-				.antMatchers(HttpMethod.PUT, "/api/users/{id}/profile").hasAuthority("USER")
-				.antMatchers(HttpMethod.GET, "/api/users/{id}/profile").hasAuthority("USER")
-				.antMatchers(HttpMethod.GET, "/api/posts/user/{userId}").hasAuthority("USER")
-				.antMatchers(HttpMethod.GET, "/api/posts/{id}").hasAuthority("USER")
-				.antMatchers(HttpMethod.PUT, "/api/posts/{id}").hasAuthority("USER")
-				.antMatchers(HttpMethod.DELETE, "/api/posts/{id}").hasAuthority("USER")
-				.antMatchers(HttpMethod.PUT, "/api/posts/{id}/like").hasAuthority("USER")
-				.antMatchers(HttpMethod.GET, "/api/posts/{id}/likes/count").hasAuthority("USER")
-				.antMatchers(HttpMethod.GET, "/api/users/registered").hasAuthority("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/users/search").hasAuthority("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/users/sort/following/asc").hasAuthority("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/users/sort/following/desc").hasAuthority("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/users/sort/email/asc").hasAuthority("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/users/sort/email/desc").hasAuthority("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/posts/uploadImage").hasAuthority("USER")
-				.antMatchers(HttpMethod.POST, "/api/posts").hasAuthority("USER")
+
 				.anyRequest().authenticated()
 				.and()
 				.cors()
 				.and()
 				.csrf().disable()
-				.addFilterBefore(new TokenAuthenticationFilter(tokenUtils, userService), BasicAuthenticationFilter.class);
+				.addFilterBefore(new TokenAuthenticationFilter(tokenUtils, userDetailsService()), BasicAuthenticationFilter.class);
 
 		http.authenticationProvider(authenticationProvider());
 

@@ -3,6 +3,7 @@ package rs.ac.uns.ftn.informatika.jpa.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
@@ -25,6 +26,7 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<PostDTO> getPostById(@PathVariable Integer id) {
         try {
             PostDTO postDTO = postService.getById(id);
@@ -48,6 +50,7 @@ public class PostController {
 
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<PostDTO> cratePost(
             @RequestBody PostDTO postDTO) {
         try {
@@ -60,6 +63,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<PostDTO> updatePost(
             @PathVariable Integer id,
             @RequestBody PostDTO postDTO,
@@ -73,6 +77,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<Void> deletePost(@PathVariable Integer id, @RequestParam Integer userId) {
         try {
             postService.deletePost(id, userId);
@@ -89,6 +94,7 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<List<PostDTO>> getPostsByUserId(@PathVariable Integer userId) {
         try {
             List<PostDTO> posts = postService.getUserPostsByUserId(userId);
@@ -99,6 +105,7 @@ public class PostController {
     }
 
     @PostMapping("/uploadImage")
+    //@PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<PostDTO> uploadImage(@RequestParam("file") MultipartFile file) {
         final String uploadDir = "src/main/resources/static/images/";
         Path uploadDirPath = Paths.get(uploadDir);
@@ -136,11 +143,13 @@ public class PostController {
     }
 
     @GetMapping("/{postId}/likes/count")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public int getLikesCount(@PathVariable Integer postId) {
         return postService.getLikesCountByPostId(postId);
     }
 
     @PutMapping("/{postId}/like")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<Void> likeUnlikePost(@PathVariable Integer postId, @RequestParam Integer userId) {
         try {
             postService.likeUnlikePost(postId, userId);
