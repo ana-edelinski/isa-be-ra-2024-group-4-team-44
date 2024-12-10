@@ -20,6 +20,7 @@ import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -58,6 +59,14 @@ public class UserController {
     public ResponseEntity<?> changePassword(@PathVariable Integer id, @RequestBody ChangePasswordDTO changePasswordDTO) {
         userService.changePassword(id, changePasswordDTO);
         return ResponseEntity.ok("Password updated successfully");
+    }
+
+    @PutMapping("/{id}/changeLastActivity")
+    //@PreAuthorize("hasAnyAuthority('USER')")
+    public ResponseEntity<?> changeLastActivity(@PathVariable Integer id, @RequestBody LocalDateTime date) {
+
+        userService.changeLastActivty(id, date);
+        return ResponseEntity.ok("Last activity updated successfully");
     }
 
     @GetMapping("/{id}")

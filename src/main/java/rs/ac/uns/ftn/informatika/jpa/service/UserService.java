@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
@@ -176,6 +178,21 @@ public ResponseEntity<UserTokenState> login(
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        userRepository.save(user);
+
+        return true;
+    }
+
+    public boolean changeLastActivty(Integer userId, LocalDateTime lastActivty) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+
+
+
+        if (lastActivty == null || lastActivty.isBefore(user.getLastActivityDate())) {
+            throw new IllegalArgumentException("Last activity is incorrect");
+        }
+
+        user.setLastActivityDate(lastActivty);
         userRepository.save(user);
 
         return true;

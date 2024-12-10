@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Collection;
 import java.util.Date;
@@ -47,6 +48,9 @@ public class User implements UserDetails {
     @Column(name = "last_password_reset_date")
     private Timestamp lastPasswordResetDate;
 
+    @Column(name = "last_activity_date")
+    private LocalDateTime lastActivityDate;
+
     @Column(name = "enabled")
     private boolean enabled;
 
@@ -68,6 +72,8 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "following_id")
     )
     private Set<User> following = new HashSet<>();
+
+
 
     public User (Integer id, String username, String name, String surname, String email, String password, boolean activated, Address address)
     {
@@ -158,6 +164,14 @@ public class User implements UserDetails {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public LocalDateTime getLastActivityDate() {
+        return lastActivityDate;
+    }
+
+    public void setLastActivityDate(LocalDateTime lastActivityDate) {
+        this.lastActivityDate = lastActivityDate;
     }
 
     public List<Role> getRoles() {
