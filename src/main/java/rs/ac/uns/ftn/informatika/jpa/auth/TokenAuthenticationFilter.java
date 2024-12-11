@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
@@ -23,13 +24,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 	private TokenUtils tokenUtils;
 
-	private UserService userService;
+	private UserDetailsService userDetailsService;
 	
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
-	public TokenAuthenticationFilter(TokenUtils tokenHelper, UserService userService) {
+	public TokenAuthenticationFilter(TokenUtils tokenHelper, UserDetailsService userDetailsService) {
 		this.tokenUtils = tokenHelper;
-		this.userService = userService;
+		this.userDetailsService = userDetailsService;
 	}
 
 	@Override
@@ -52,7 +53,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 				if (username != null) {
 					
 					// 3. Preuzimanje korisnika na osnovu username-a
-					UserDetails userDetails = userService.loadUserByUsername(username);
+					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 					// 4. Provera da li je prosledjeni token validan
 					if (tokenUtils.validateToken(authToken, userDetails)) {
 						
