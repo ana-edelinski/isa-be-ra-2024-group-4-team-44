@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
@@ -325,6 +327,27 @@ public ResponseEntity<UserTokenState> login(
             userDTOs.add(userDTO);
         }
         return userDTOs;
+    }
+
+    @Scheduled(cron = "0 0 18 * * ?")
+    public void sendInactivityReports() {
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("Funkcija se izvrsava");
+
+        List<User> allUsers = userRepository.findAll();
+
+        for (User user : allUsers) {
+            LocalDateTime lastActivity = user.getLastActivityDate();
+            long daysBetween = ChronoUnit.DAYS.between(lastActivity, now);
+            System.out.println(daysBetween);
+
+            // Proveri da li je korisnik neaktivan najmanje 7 dana
+            // i da li je daysBetween deljiv sa 7 (7, 14, 21...)
+            if (daysBetween >= 7 && daysBetween % 7 == 0) {
+                emailService.sendUnactiveReportEmail(user.getEmail());
+
+            }
+        }
     }
 
     public Integer getRole(Integer userId){

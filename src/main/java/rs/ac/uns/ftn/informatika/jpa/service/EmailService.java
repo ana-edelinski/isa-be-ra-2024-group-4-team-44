@@ -20,4 +20,30 @@ public class EmailService {
         mailSender.send(message);
         System.out.println("Email sent USPESNOOOOOO");
     }
+
+    public void sendUnactiveReportEmail(String email) {
+
+        String loginLink = "http://localhost:4200/login";
+        Integer newCommentsCount = 0;
+        Integer newPostsCount = 0;
+        Integer newFollowersCount = 0;
+
+        String messageText = "We have missed you, you haven't logged in in the past 7 days!\n\n" +
+                "Here is what happened since then:\n" +
+                "Number of new comments on your posts: " + newCommentsCount + "\n" +
+                "Number of new posts from people you follow: " + newPostsCount + "\n" +
+                "Number of new followers: " + newFollowersCount + "\n\n" +
+                "Click here to log back in: " + loginLink;
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Activity report");
+        message.setText(messageText);
+
+        mailSender.send(message);
+        System.out.println("Email sent successfully!");
+        System.out.println(email);
+    }
+
+
 }
