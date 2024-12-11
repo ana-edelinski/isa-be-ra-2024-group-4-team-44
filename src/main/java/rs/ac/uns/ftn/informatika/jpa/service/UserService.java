@@ -1,7 +1,9 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Isolation;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,8 @@ import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
@@ -44,6 +48,10 @@ public class UserService implements UserDetailsService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private HttpServletRequest request; // Autowired HttpServletRequest
+
+
+    @Autowired
     private RoleService roleService;
 
     @Autowired
@@ -59,7 +67,7 @@ public class UserService implements UserDetailsService {
     private EmailService emailService;
 
     @Transactional
-    public ResponseEntity<?> register(UserDTO userDto) {
+    public synchronized ResponseEntity<?> register(UserDTO userDto) {
         if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
             return ResponseEntity.badRequest().body("Passwords do not match!");
         }
@@ -77,6 +85,13 @@ public class UserService implements UserDetailsService {
         }
         if (userRepository.existsByEmail(userDto.getEmail())) {
             return ResponseEntity.badRequest().body("Email address already exists!");
+        }
+
+        // Simulacija kašnjenja (za testiranje konkurencije)
+        try {
+            Thread.sleep(5000); // Simulirajte kašnjenje
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
 
         User user = new User();
@@ -100,34 +115,26 @@ public class UserService implements UserDetailsService {
         List<Role> roles = roleService.findByName("ROLE_USER");
         user.setRoles(roles);
 
-        userRepository.save(user);
+        //userRepository.save(user);
+        try {
+            // Save user in the database
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException ex) {
+            // Handle constraint violations (for example, duplicate username or email)
+            if (ex.getMessage().contains("uk_6dotkott2kjsp8vw4d0m25fb7")) {
+                // Provide specific error message when username already exists
+                return ResponseEntity.badRequest().body("Username already exists!");
+            }
+            // Return a general error message for other violations
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during registration.");
+        }
+
 
         emailService.sendActivationEmail(user.getEmail(), activationToken);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserDTO(user));
     }
 
-
-//    public ResponseEntity<?> login(UserDTO userDto) {
-//        Optional<User> userOptional = userRepository.findByEmail(userDto.getEmail());
-//        if (!userOptional.isPresent()) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ne postoji korisnik sa tim email-om.");
-//        }
-//
-//        User user = userOptional.get();
-//
-//        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neispravna lozinka");
-//        }
-//
-//        if (!user.isActivated()) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nalog nije aktiviran");
-//        }
-//
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("user", new UserDTO(user));
-//        return ResponseEntity.ok(response);
-//    }
 public ResponseEntity<UserTokenState> login(
         @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
     // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
@@ -312,6 +319,17 @@ public ResponseEntity<UserTokenState> login(
 
     public Integer getRole(Integer userId){
         return userRepository.findRoleIdByUserId(userId);
+    }
+
+    public String getClientIP() {
+        String remoteAddr = "";
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || remoteAddr.isEmpty()) {
+                remoteAddr = request.getRemoteAddr();
+            }
+        }
+        return remoteAddr;
     }
 
 }

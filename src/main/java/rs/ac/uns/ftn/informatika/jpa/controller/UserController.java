@@ -3,21 +3,15 @@ package rs.ac.uns.ftn.informatika.jpa.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
-import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
+import rs.ac.uns.ftn.informatika.jpa.dto.*;
+import rs.ac.uns.ftn.informatika.jpa.service.LoginAttemptService;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
+
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -31,6 +25,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserDTO userDto) {
@@ -39,11 +35,28 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDto, HttpServletResponse response) {
-        // Kreiraj JwtAuthenticationRequest sa podacima iz UserDTO
-        JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest(userDto.getUsername(), userDto.getPassword());
+//        // Kreiraj JwtAuthenticationRequest sa podacima iz UserDTO
+//        JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest(userDto.getUsername(), userDto.getPassword());
+//
+//        // Pozovi servisnu metodu koja prihvata JwtAuthenticationRequest
+//        return userService.login(authenticationRequest, response);
 
-        // Pozovi servisnu metodu koja prihvata JwtAuthenticationRequest
-        return userService.login(authenticationRequest, response);
+
+        String clientIp = userService.getClientIP();
+
+        if (loginAttemptService.isBlocked(clientIp)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Previše neuspelih pokušaja. Pokušajte ponovo kasnije.");
+        }
+
+        try {
+            JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest(userDto.getUsername(), userDto.getPassword());
+            ResponseEntity<UserTokenState> result = userService.login(authenticationRequest, response);
+            loginAttemptService.loginSucceeded(clientIp);
+            return result;
+        } catch (Exception e) {
+            loginAttemptService.loginFailed(clientIp);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neuspešna prijava.");
+        }
     }
 
 

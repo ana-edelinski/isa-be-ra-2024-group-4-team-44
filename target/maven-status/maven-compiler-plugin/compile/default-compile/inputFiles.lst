@@ -2,6 +2,7 @@ C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\j
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\PostDTO.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\exception\ResourceConflictException.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\auth\TokenBasedAuthentication.java
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\ImageCompressionService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\JpaExampleApplication.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\repository\UserRepository.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\UserService.java
@@ -13,6 +14,7 @@ C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\j
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\auth\TokenAuthenticationFilter.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\ChangePasswordDTO.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\UserDTO.java
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\controller\ImageCompressionController.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\RoleService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\util\TokenUtils.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\LikeDTO.java
@@ -23,6 +25,7 @@ C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\j
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\CommentDTO.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\repository\AddressRepository.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\EmailService.java
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\UserInfoDTO.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\model\Post.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\ServletInitializer.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\controller\UserController.java

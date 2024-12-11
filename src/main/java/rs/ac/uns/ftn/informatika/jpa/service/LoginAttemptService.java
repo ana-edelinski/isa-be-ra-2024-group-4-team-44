@@ -1,9 +1,12 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import org.springframework.stereotype.Service;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class LogginAttemptService {
+@Service
+public class LoginAttemptService {
     private final int MAX_ATTEMPTS = 5;
     private final long ATTEMPT_RESET_TIME = TimeUnit.MINUTES.toMillis(1);
     private final ConcurrentHashMap<String, Attempt> attempts = new ConcurrentHashMap<>();
