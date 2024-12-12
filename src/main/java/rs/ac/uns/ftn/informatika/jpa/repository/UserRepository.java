@@ -57,5 +57,16 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT ur.role_id FROM user_role ur WHERE ur.user_id = :userId", nativeQuery = true)
     Integer findRoleIdByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT CASE WHEN COUNT(uf) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM User u JOIN u.following uf WHERE u.id = :followerId AND uf.id = :followingId")
+    boolean isFollowing(@Param("followerId") Integer followerId, @Param("followingId") Integer followingId);
+
+    @Query("SELECT u.following FROM User u WHERE u.id = :userId")
+    List<User> findFollowingByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT u FROM User u JOIN u.following f WHERE f.id = :userId")
+    List<User> findFollowersByUserId(@Param("userId") Integer userId);
+
 }
 

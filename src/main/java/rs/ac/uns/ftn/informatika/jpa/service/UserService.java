@@ -314,4 +314,77 @@ public ResponseEntity<UserTokenState> login(
         return userRepository.findRoleIdByUserId(userId);
     }
 
+    @Transactional
+    public ResponseEntity<?> followUser(Integer followerId, Integer followingId) {
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new NoSuchElementException("Follower not found"));
+        User toFollow = userRepository.findById(followingId)
+                .orElseThrow(() -> new NoSuchElementException("User to follow not found"));
+
+        if (userRepository.isFollowing(followerId, followingId)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already following this user");
+        }
+
+        follower.getFollowing().add(toFollow);
+        userRepository.save(follower);
+
+        return ResponseEntity.ok("You are now following " + toFollow.getUsername());
+    }
+
+    @Transactional
+    public ResponseEntity<?> unfollowUser(Integer followerId, Integer followingId) {
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new NoSuchElementException("Follower not found"));
+        User toUnfollow = userRepository.findById(followingId)
+                .orElseThrow(() -> new NoSuchElementException("User to unfollow not found"));
+
+        if (!follower.getFollowing().contains(toUnfollow)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You are not following this user");
+        }
+
+        follower.getFollowing().remove(toUnfollow);
+        userRepository.save(follower);
+
+        return ResponseEntity.ok("You have unfollowed " + toUnfollow.getUsername());
+    }
+
+    public List<UserInfoDTO> getFollowing(Integer userId) {
+        List<User> following = userRepository.findFollowingByUserId(userId);
+        List<UserInfoDTO> userInfoDTOs = new ArrayList<>();
+
+        for (User user : following) {
+            userInfoDTOs.add(new UserInfoDTO(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getName(),
+                    user.getSurname(),
+                    user.getEmail(),
+                    user.getPosts().size(),
+                    user.getFollowing().size()
+            ));
+        }
+
+        return userInfoDTOs;
+    }
+
+    public List<UserInfoDTO> getFollowers(Integer userId) {
+        List<User> followers = userRepository.findFollowersByUserId(userId);
+        List<UserInfoDTO> userInfoDTOs = new ArrayList<>();
+
+        for (User user : followers) {
+            userInfoDTOs.add(new UserInfoDTO(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getName(),
+                    user.getSurname(),
+                    user.getEmail(),
+                    user.getPosts().size(),
+                    user.getFollowing().size()
+            ));
+        }
+
+        return userInfoDTOs;
+    }
+
+
 }

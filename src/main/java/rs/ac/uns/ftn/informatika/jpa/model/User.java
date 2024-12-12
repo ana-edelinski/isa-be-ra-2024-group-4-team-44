@@ -69,6 +69,11 @@ public class User implements UserDetails {
     )
     private Set<User> following = new HashSet<>();
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
+    private Set<User> followers = new HashSet<>();
+
+
     public User (Integer id, String username, String name, String surname, String email, String password, boolean activated, Address address)
     {
         this.id = id;
@@ -215,4 +220,11 @@ public class User implements UserDetails {
         this.posts = posts;
     }
 
+    public Set<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Set<User> followers) {
+        this.followers = followers;
+    }
 }

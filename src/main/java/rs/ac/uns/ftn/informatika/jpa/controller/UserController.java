@@ -20,6 +20,7 @@ import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -134,6 +135,33 @@ public class UserController {
     public Integer getRole(@PathVariable Integer id){
         Integer role = userService.getRole(id);
         return role;
+    }
+
+    @PostMapping("/follow/{followingId}")
+    public ResponseEntity<?> followUser(@PathVariable Integer followingId, Principal principal) {
+        User currentUser = userService.loadUserByUsername(principal.getName());
+        return userService.followUser(currentUser.getId(), followingId);
+    }
+
+    @PostMapping("/unfollow/{followingId}")
+    public ResponseEntity<?> unfollowUser(@PathVariable Integer followingId, Principal principal) {
+        User currentUser = userService.loadUserByUsername(principal.getName());
+        return userService.unfollowUser(currentUser.getId(), followingId);
+    }
+
+
+    @GetMapping("/{userId}/following")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    public ResponseEntity<List<UserInfoDTO>> getFollowing(@PathVariable Integer userId) {
+        List<UserInfoDTO> following = userService.getFollowing(userId);
+        return ResponseEntity.ok(following);
+    }
+
+    @GetMapping("/{userId}/followers")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    public ResponseEntity<List<UserInfoDTO>> getFollowers(@PathVariable Integer userId) {
+        List<UserInfoDTO> followers = userService.getFollowers(userId);
+        return ResponseEntity.ok(followers);
     }
 
 }
