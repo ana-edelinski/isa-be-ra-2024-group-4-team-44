@@ -149,6 +149,13 @@ public class UserController {
         return userService.unfollowUser(currentUser.getId(), followingId);
     }
 
+    @GetMapping("/{currentUserId}/isFollowing/{targetUserId}")
+    public ResponseEntity<Boolean> isFollowing(
+            @PathVariable Integer currentUserId,
+            @PathVariable Integer targetUserId) {
+        boolean isFollowing = userService.isFollowing(currentUserId, targetUserId);
+        return ResponseEntity.ok(isFollowing);
+    }
 
     @GetMapping("/{userId}/following")
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")

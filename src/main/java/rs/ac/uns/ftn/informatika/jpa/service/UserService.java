@@ -314,39 +314,54 @@ public ResponseEntity<UserTokenState> login(
         return userRepository.findRoleIdByUserId(userId);
     }
 
+    public boolean isFollowing(Integer currentUserId, Integer targetUserId) {
+        return userRepository.isFollowing(currentUserId, targetUserId);
+    }
+
     @Transactional
-    public ResponseEntity<?> followUser(Integer followerId, Integer followingId) {
+    public ResponseEntity<Map<String, String>> followUser(Integer followerId, Integer followingId) {
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new NoSuchElementException("Follower not found"));
         User toFollow = userRepository.findById(followingId)
                 .orElseThrow(() -> new NoSuchElementException("User to follow not found"));
 
         if (userRepository.isFollowing(followerId, followingId)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already following this user");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Already following this user");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         follower.getFollowing().add(toFollow);
         userRepository.save(follower);
 
-        return ResponseEntity.ok("You are now following " + toFollow.getUsername());
+        Map<String, String> successResponse = new HashMap<>();
+        successResponse.put("message", "You are now following " + toFollow.getUsername());
+        return ResponseEntity.ok(successResponse);
     }
 
+
     @Transactional
-    public ResponseEntity<?> unfollowUser(Integer followerId, Integer followingId) {
+    public ResponseEntity<Map<String, String>> unfollowUser(Integer followerId, Integer followingId) {
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new NoSuchElementException("Follower not found"));
         User toUnfollow = userRepository.findById(followingId)
                 .orElseThrow(() -> new NoSuchElementException("User to unfollow not found"));
 
         if (!follower.getFollowing().contains(toUnfollow)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You are not following this user");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "You are not following this user");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         follower.getFollowing().remove(toUnfollow);
         userRepository.save(follower);
 
-        return ResponseEntity.ok("You have unfollowed " + toUnfollow.getUsername());
+        Map<String, String> successResponse = new HashMap<>();
+        successResponse.put("message", "You have unfollowed " + toUnfollow.getUsername());
+        return ResponseEntity.ok(successResponse);
     }
+
+
 
     public List<UserInfoDTO> getFollowing(Integer userId) {
         List<User> following = userRepository.findFollowingByUserId(userId);
