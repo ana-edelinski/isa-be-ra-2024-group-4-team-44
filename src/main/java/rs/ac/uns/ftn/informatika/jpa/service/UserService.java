@@ -320,6 +320,12 @@ public ResponseEntity<UserTokenState> login(
 
     @Transactional
     public ResponseEntity<Map<String, String>> followUser(Integer followerId, Integer followingId) {
+        if (followerId.equals(followingId)) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "You cannot follow yourself");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+        
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new NoSuchElementException("Follower not found"));
         User toFollow = userRepository.findById(followingId)
