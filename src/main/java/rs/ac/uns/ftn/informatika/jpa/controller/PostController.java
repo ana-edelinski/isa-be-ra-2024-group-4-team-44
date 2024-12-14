@@ -153,5 +153,15 @@ public class PostController {
         }
     }
 
+    @GetMapping("/following/{userId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public ResponseEntity<List<PostDTO>> getPostsFromFollowing(@PathVariable Integer userId) {
+        try {
+            List<PostDTO> posts = postService.getPostsFromFollowing(userId);
+            return new ResponseEntity<>(posts, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
