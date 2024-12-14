@@ -158,14 +158,14 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/following")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<List<UserInfoDTO>> getFollowing(@PathVariable Integer userId) {
         List<UserInfoDTO> following = userService.getFollowing(userId);
         return ResponseEntity.ok(following);
     }
 
     @GetMapping("/{userId}/followers")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<List<UserInfoDTO>> getFollowers(@PathVariable Integer userId) {
         List<UserInfoDTO> followers = userService.getFollowers(userId);
         return ResponseEntity.ok(followers);

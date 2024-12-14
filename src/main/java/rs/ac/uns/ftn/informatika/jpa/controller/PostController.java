@@ -94,7 +94,7 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    //@PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<List<PostDTO>> getPostsByUserId(@PathVariable Integer userId) {
         try {
             List<PostDTO> posts = postService.getUserPostsByUserId(userId);
@@ -143,13 +143,12 @@ public class PostController {
     }
 
     @GetMapping("/{postId}/likes/count")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public int getLikesCount(@PathVariable Integer postId) {
         return postService.getLikesCountByPostId(postId);
     }
 
     @PutMapping("/{postId}/like")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Void> likeUnlikePost(@PathVariable Integer postId, @RequestParam Integer userId) {
         try {
             postService.likeUnlikePost(postId, userId);
@@ -158,7 +157,6 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
 
 
 }

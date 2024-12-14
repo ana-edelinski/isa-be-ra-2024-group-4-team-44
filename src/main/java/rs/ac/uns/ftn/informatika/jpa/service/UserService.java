@@ -325,7 +325,7 @@ public ResponseEntity<UserTokenState> login(
             errorResponse.put("error", "You cannot follow yourself");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-        
+
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new NoSuchElementException("Follower not found"));
         User toFollow = userRepository.findById(followingId)
