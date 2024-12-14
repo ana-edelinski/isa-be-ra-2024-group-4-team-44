@@ -26,7 +26,7 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<PostDTO> getPostById(@PathVariable Integer id) {
         try {
             PostDTO postDTO = postService.getById(id);
@@ -140,11 +140,6 @@ public class PostController {
         } catch (IOException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-    }
-
-    @GetMapping("/{postId}/likes/count")
-    public int getLikesCount(@PathVariable Integer postId) {
-        return postService.getLikesCountByPostId(postId);
     }
 
     @PutMapping("/{postId}/like")

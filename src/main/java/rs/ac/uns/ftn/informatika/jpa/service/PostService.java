@@ -125,10 +125,6 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public int getLikesCountByPostId(Integer postId) {
-        return likeRepository.countByPostId(postId);
-    }
-
     public void likeUnlikePost(Integer postId, Integer userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
