@@ -1,4 +1,8 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class UserService implements UserDetailsService {
+
+    private final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private final UserRepository userRepository;
@@ -319,6 +325,7 @@ public ResponseEntity<UserTokenState> login(
     }
 
     @Transactional
+    @RateLimiter(name = "follow-limit", fallbackMethod = "standardFallback")
     public ResponseEntity<Map<String, String>> followUser(Integer followerId, Integer followingId) {
         if (followerId.equals(followingId)) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -345,8 +352,8 @@ public ResponseEntity<UserTokenState> login(
         return ResponseEntity.ok(successResponse);
     }
 
-
     @Transactional
+    @RateLimiter(name = "unfollow-limit", fallbackMethod = "standardFallback")
     public ResponseEntity<Map<String, String>> unfollowUser(Integer followerId, Integer followingId) {
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new NoSuchElementException("Follower not found"));
@@ -367,7 +374,12 @@ public ResponseEntity<UserTokenState> login(
         return ResponseEntity.ok(successResponse);
     }
 
-
+    public ResponseEntity<Map<String, String>> standardFallback(Integer followerId, Integer followingId, RequestNotPermitted rnp) {
+        LOG.warn("Rate limit exceeded for follow request. Follower ID: {}, Following ID: {}", followerId, followingId);
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Rate limit exceeded. Please try again later.");
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+    }
 
     public List<UserInfoDTO> getFollowing(Integer userId) {
         List<User> following = userRepository.findFollowingByUserId(userId);
