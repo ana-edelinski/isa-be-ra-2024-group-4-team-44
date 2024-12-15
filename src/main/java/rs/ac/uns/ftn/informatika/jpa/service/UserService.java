@@ -344,12 +344,12 @@ public ResponseEntity<UserTokenState> login(
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Thread interrupted during follow operation");
-        }
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//            throw new RuntimeException("Thread interrupted during follow operation");
+//        }
 
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new NoSuchElementException("Follower not found"));

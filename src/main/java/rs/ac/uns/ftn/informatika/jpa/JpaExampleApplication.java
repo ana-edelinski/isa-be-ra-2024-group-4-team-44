@@ -25,10 +25,10 @@ public class JpaExampleApplication {
 		SpringApplication.run(JpaExampleApplication.class, args);
 	}
 
-	@PostConstruct
-	public void testConcurrency() {
+//	@PostConstruct
+//	public void testConcurrency() {
 //		new Thread(() -> userService.simulateFollowWithDelay(1, 2)).start();
 //		new Thread(() -> userService.simulateFollowWithDelay(3, 2)).start();
-	}
+//	}
 
 }
