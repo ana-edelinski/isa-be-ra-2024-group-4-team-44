@@ -25,6 +25,8 @@ import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -324,7 +326,7 @@ public ResponseEntity<UserTokenState> login(
         return userRepository.isFollowing(currentUserId, targetUserId);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED)
     @RateLimiter(name = "follow-limit", fallbackMethod = "standardFallback")
     public ResponseEntity<Map<String, String>> followUser(Integer followerId, Integer followingId) {
         if (followerId.equals(followingId)) {
@@ -333,9 +335,7 @@ public ResponseEntity<UserTokenState> login(
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new NoSuchElementException("Follower not found"));
-        User toFollow = userRepository.findById(followingId)
+        User toFollow = userRepository.findByIdWithLock(followingId)
                 .orElseThrow(() -> new NoSuchElementException("User to follow not found"));
 
         if (userRepository.isFollowing(followerId, followingId)) {
@@ -344,6 +344,16 @@ public ResponseEntity<UserTokenState> login(
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Thread interrupted during follow operation");
+        }
+
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new NoSuchElementException("Follower not found"));
+
         follower.getFollowing().add(toFollow);
         userRepository.save(follower);
 
@@ -351,6 +361,19 @@ public ResponseEntity<UserTokenState> login(
         successResponse.put("message", "You are now following " + toFollow.getUsername());
         return ResponseEntity.ok(successResponse);
     }
+
+    @Transactional
+    public void simulateFollowWithDelay(Integer followerId, Integer followingId) {
+        try {
+            System.out.println("Simulacija počinje za korisnika: " + followerId);
+            Thread.sleep(2000); // Pauza da simulira sporo izvršenje
+            followUser(followerId, followingId);
+            System.out.println("Simulacija završena za korisnika: " + followerId);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
 
     @Transactional
     @RateLimiter(name = "unfollow-limit", fallbackMethod = "standardFallback")

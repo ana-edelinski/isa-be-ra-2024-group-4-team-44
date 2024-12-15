@@ -1,10 +1,14 @@
 package rs.ac.uns.ftn.informatika.jpa.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
+import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +71,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u JOIN u.following f WHERE f.id = :userId")
     List<User> findFollowersByUserId(@Param("userId") Integer userId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
+    Optional<User> findByIdWithLock(@Param("id") Integer id);
+
 
 }
 
