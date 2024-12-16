@@ -1,11 +1,17 @@
 package rs.ac.uns.ftn.informatika.jpa.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import java.time.LocalDate;
+
+import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +64,22 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT ur.role_id FROM user_role ur WHERE ur.user_id = :userId", nativeQuery = true)
     Integer findRoleIdByUserId(@Param("userId") Integer userId);
+
+
+    @Query("SELECT CASE WHEN COUNT(uf) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM User u JOIN u.following uf WHERE u.id = :followerId AND uf.id = :followingId")
+    boolean isFollowing(@Param("followerId") Integer followerId, @Param("followingId") Integer followingId);
+
+    @Query("SELECT u.following FROM User u WHERE u.id = :userId")
+    List<User> findFollowingByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT u FROM User u JOIN u.following f WHERE f.id = :userId")
+    List<User> findFollowersByUserId(@Param("userId") Integer userId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
+    Optional<User> findByIdWithLock(@Param("id") Integer id);
 
 }
 
