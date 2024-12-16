@@ -1,4 +1,8 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +25,8 @@ import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class UserService implements UserDetailsService {
+
+    private final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private final UserRepository userRepository;
@@ -313,5 +321,126 @@ public ResponseEntity<UserTokenState> login(
     public Integer getRole(Integer userId){
         return userRepository.findRoleIdByUserId(userId);
     }
+
+    public boolean isFollowing(Integer currentUserId, Integer targetUserId) {
+        return userRepository.isFollowing(currentUserId, targetUserId);
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED)
+    @RateLimiter(name = "follow-limit", fallbackMethod = "standardFallback")
+    public ResponseEntity<Map<String, String>> followUser(Integer followerId, Integer followingId) {
+        if (followerId.equals(followingId)) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "You cannot follow yourself");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
+        User toFollow = userRepository.findByIdWithLock(followingId)
+                .orElseThrow(() -> new NoSuchElementException("User to follow not found"));
+
+        if (userRepository.isFollowing(followerId, followingId)) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Already following this user");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//            throw new RuntimeException("Thread interrupted during follow operation");
+//        }
+
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new NoSuchElementException("Follower not found"));
+
+        follower.getFollowing().add(toFollow);
+        userRepository.save(follower);
+
+        Map<String, String> successResponse = new HashMap<>();
+        successResponse.put("message", "You are now following " + toFollow.getUsername());
+        return ResponseEntity.ok(successResponse);
+    }
+
+    @Transactional
+    public void simulateFollowWithDelay(Integer followerId, Integer followingId) {
+        try {
+            System.out.println("Simulacija počinje za korisnika: " + followerId);
+            Thread.sleep(2000); // Pauza da simulira sporo izvršenje
+            followUser(followerId, followingId);
+            System.out.println("Simulacija završena za korisnika: " + followerId);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+
+    @Transactional
+    @RateLimiter(name = "unfollow-limit", fallbackMethod = "standardFallback")
+    public ResponseEntity<Map<String, String>> unfollowUser(Integer followerId, Integer followingId) {
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new NoSuchElementException("Follower not found"));
+        User toUnfollow = userRepository.findById(followingId)
+                .orElseThrow(() -> new NoSuchElementException("User to unfollow not found"));
+
+        if (!follower.getFollowing().contains(toUnfollow)) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "You are not following this user");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
+        follower.getFollowing().remove(toUnfollow);
+        userRepository.save(follower);
+
+        Map<String, String> successResponse = new HashMap<>();
+        successResponse.put("message", "You have unfollowed " + toUnfollow.getUsername());
+        return ResponseEntity.ok(successResponse);
+    }
+
+    public ResponseEntity<Map<String, String>> standardFallback(Integer followerId, Integer followingId, RequestNotPermitted rnp) {
+        LOG.warn("Rate limit exceeded for follow request. Follower ID: {}, Following ID: {}", followerId, followingId);
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Rate limit exceeded. Please try again later.");
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+    }
+
+    public List<UserInfoDTO> getFollowing(Integer userId) {
+        List<User> following = userRepository.findFollowingByUserId(userId);
+        List<UserInfoDTO> userInfoDTOs = new ArrayList<>();
+
+        for (User user : following) {
+            userInfoDTOs.add(new UserInfoDTO(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getName(),
+                    user.getSurname(),
+                    user.getEmail(),
+                    user.getPosts().size(),
+                    user.getFollowing().size()
+            ));
+        }
+
+        return userInfoDTOs;
+    }
+
+    public List<UserInfoDTO> getFollowers(Integer userId) {
+        List<User> followers = userRepository.findFollowersByUserId(userId);
+        List<UserInfoDTO> userInfoDTOs = new ArrayList<>();
+
+        for (User user : followers) {
+            userInfoDTOs.add(new UserInfoDTO(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getName(),
+                    user.getSurname(),
+                    user.getEmail(),
+                    user.getPosts().size(),
+                    user.getFollowing().size()
+            ));
+        }
+
+        return userInfoDTOs;
+    }
+
 
 }

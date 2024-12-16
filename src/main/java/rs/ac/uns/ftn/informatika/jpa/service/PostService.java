@@ -14,10 +14,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -125,10 +122,6 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public int getLikesCountByPostId(Integer postId) {
-        return likeRepository.countByPostId(postId);
-    }
-
     public void likeUnlikePost(Integer postId, Integer userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -147,6 +140,22 @@ public class PostService {
             newLike.setUser(user);
             likeRepository.save(newLike);
         }
+    }
+
+    public List<PostDTO> getPostsFromFollowing(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Set<User> followingUsers = user.getFollowing();
+
+        if (followingUsers.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Post> posts = postRepository.findPostsByFollowingUsers(followingUsers);
+        return posts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
     }
 
 }
