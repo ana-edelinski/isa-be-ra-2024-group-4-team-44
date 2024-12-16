@@ -2,6 +2,8 @@ package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
@@ -13,7 +15,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.LikeRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,8 +124,10 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void likeUnlikePost(Integer postId, Integer userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+        System.out.println("prvi deo");
+        Post post = postRepository.findByIdWithLock(postId).orElseThrow(() -> new RuntimeException("Post not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
         // TODO: Da li da imamo ovo pravilo?
@@ -131,6 +135,12 @@ public class PostService {
             //throw new RuntimeException("User cannot like their own post");
         //}
 
+//        try {
+//            Thread.sleep(5000); // spava 2 sekunde
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
+        System.out.println("drugi deo");
         Optional<Like> existingLike = likeRepository.findByPostAndUser(post, user);
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
@@ -140,6 +150,8 @@ public class PostService {
             newLike.setUser(user);
             likeRepository.save(newLike);
         }
+
+
     }
 
     public List<PostDTO> getPostsFromFollowing(Integer userId) {

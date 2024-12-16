@@ -145,6 +145,7 @@ public class PostController {
     @PutMapping("/{postId}/like")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Void> likeUnlikePost(@PathVariable Integer postId, @RequestParam Integer userId) {
+        System.out.println("Stigao zahtev za lajkovanje! postId: " + postId + ", userId: " + userId);
         try {
             postService.likeUnlikePost(postId, userId);
             return new ResponseEntity<>(HttpStatus.OK);
