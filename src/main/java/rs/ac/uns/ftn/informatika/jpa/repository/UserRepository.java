@@ -36,32 +36,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByActivationToken(String activationToken);
 
-    @Query("SELECT u FROM User u WHERE " +
-            "(:name = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
-            "(:surname = '' OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) AND " +
-            "(:email = '' OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
-            "(:minPosts = 0 OR SIZE(u.posts) >= :minPosts) AND " +
-            "(:maxPosts = 2147483647 OR SIZE(u.posts) <= :maxPosts)")
-    List<User> searchUsers(@Param("name") String name,
-                           @Param("surname") String surname,
-                           @Param("email") String email,
-                           @Param("minPosts") Integer minPosts,
-                           @Param("maxPosts") Integer maxPosts);
-
-
-
-    @Query("SELECT u FROM User u ORDER BY SIZE(u.following) ASC")
-    List<User> findAllSortedByFollowingCountAsc();
-
-    @Query("SELECT u FROM User u ORDER BY SIZE(u.following) DESC") 
-    List<User> findAllSortedByFollowingCountDesc();
-
-    @Query("SELECT u FROM User u ORDER BY u.email ASC")
-    List<User> findAllSortedByEmailAsc();
-
-    @Query("SELECT u FROM User u ORDER BY u.email DESC")
-    List<User> findAllSortedByEmailDesc();
-
     @Query(value = "SELECT ur.role_id FROM user_role ur WHERE ur.user_id = :userId", nativeQuery = true)
     Integer findRoleIdByUserId(@Param("userId") Integer userId);
 
@@ -85,18 +59,28 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Page<User> findAll(Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE " +
-            "(:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+    @Query("SELECT u FROM User u " +
+            "WHERE (:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
             "(:surname IS NULL OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) AND " +
             "(:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
             "(:minPosts = 0 OR SIZE(u.posts) >= :minPosts) AND " +
-            "(:maxPosts = 2147483647 OR SIZE(u.posts) <= :maxPosts)")
-    Page<User> searchUsersPaged(@Param("name") String name,
-                                @Param("surname") String surname,
-                                @Param("email") String email,
-                                @Param("minPosts") Integer minPosts,
-                                @Param("maxPosts") Integer maxPosts,
-                                Pageable pageable);
+            "(:maxPosts = 2147483647 OR SIZE(u.posts) <= :maxPosts) " +
+            "ORDER BY " +
+            "CASE WHEN :sortField = 'following' AND :sortDirection = 'asc' THEN SIZE(u.following) END ASC, " +
+            "CASE WHEN :sortField = 'following' AND :sortDirection = 'desc' THEN SIZE(u.following) END DESC, " +
+            "CASE WHEN :sortField = 'email' AND :sortDirection = 'asc' THEN u.email END ASC, " +
+            "CASE WHEN :sortField = 'email' AND :sortDirection = 'desc' THEN u.email END DESC")
+    Page<User> searchUsers(
+            @Param("name") String name,
+            @Param("surname") String surname,
+            @Param("email") String email,
+            @Param("minPosts") Integer minPosts,
+            @Param("maxPosts") Integer maxPosts,
+            @Param("sortField") String sortField,
+            @Param("sortDirection") String sortDirection,
+            Pageable pageable);
+
+
 
 
 

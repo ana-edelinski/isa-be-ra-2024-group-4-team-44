@@ -245,84 +245,6 @@ public ResponseEntity<UserTokenState> login(
         return userDTOs;
     }
 
-
-    public List<UserInfoDTO> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
-        // Osiguraj da su parametri prazni stringovi ako nisu prosleđeni
-        name = (name != null && !name.isEmpty()) ? name : "";
-        surname = (surname != null && !surname.isEmpty()) ? surname : "";
-        email = (email != null && !email.isEmpty()) ? email : "";
-        minPosts = (minPosts != null && minPosts > 0) ? minPosts : 0;
-        maxPosts = (maxPosts != null && maxPosts > 0) ? maxPosts : Integer.MAX_VALUE;
-
-        List<User> users = userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-
-        return userDTOs;
-    }
-
-
-
-    public List<UserInfoDTO> getUsersSortedByFollowingCountAsc() {
-        List<User> users = userRepository.findAllSortedByFollowingCountAsc();
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-
-        return userDTOs;
-    }
-
-
-    public List<UserInfoDTO> getUsersSortedByFollowingCountDesc() {
-        List<User> users = userRepository.findAllSortedByFollowingCountDesc();
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-        return userDTOs;
-    }
-
-    public List<UserInfoDTO> getUsersSortedByEmailAsc() {
-        List<User> users = userRepository.findAllSortedByEmailAsc();
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-        return userDTOs;
-    }
-
-    public List<UserInfoDTO> getUsersSortedByEmailDesc() {
-        List<User> users = userRepository.findAllSortedByEmailDesc();
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-        return userDTOs;
-    }
-
     public Integer getRole(Integer userId){
         return userRepository.findRoleIdByUserId(userId);
     }
@@ -472,27 +394,36 @@ public ResponseEntity<UserTokenState> login(
         System.out.println("Scheduled cleanup of inactive accounts completed.");
     }
 
-    // Metod za paginaciju svih korisnika
     public Page<UserInfoDTO> getAllUsersPaged(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAll(pageable).map(UserInfoDTO::new);
     }
 
-    // Metod za pretragu korisnika sa paginacijom
-    public Page<UserInfoDTO> searchUsersPaged(String name, String surname, String email, int minPosts, int maxPosts, int page, int size, String sortField, String sortDirection) {
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return userRepository.searchUsersPaged(name, surname, email, minPosts, maxPosts, pageable)
-                .map(user -> new UserInfoDTO(
-                        user.getId(),
-                        user.getUsername(),
-                        user.getName(),
-                        user.getSurname(),
-                        user.getEmail(),
-                        user.getPosts().size(),
-                        user.getFollowing().size()
-                ));
+    public Page<UserInfoDTO> searchUsers(String name, String surname, String email, int minPosts, int maxPosts, String sortField, String sortDirection, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> users = userRepository.searchUsers(
+                name,
+                surname,
+                email,
+                minPosts,
+                maxPosts,
+                sortField,
+                sortDirection,
+                pageable
+        );
+
+        return users.map(user -> new UserInfoDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getName(),
+                user.getSurname(),
+                user.getEmail(),
+                user.getPosts().size(),
+                user.getFollowing().size()
+        ));
     }
+
 
 
 
