@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -20,6 +22,7 @@ public class Comment {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;

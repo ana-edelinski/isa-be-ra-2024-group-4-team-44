@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/changePassword")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<?> changePassword(@PathVariable Integer id, @RequestBody ChangePasswordDTO changePasswordDTO) {
         userService.changePassword(id, changePasswordDTO);
         return ResponseEntity.ok("Password updated successfully");
@@ -80,14 +80,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}/profile")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<UserDTO> getUserProfile(@PathVariable Integer id) {
         UserDTO userProfileDto = userService.getUserProfile(id);
         return ResponseEntity.ok(userProfileDto);
     }
 
     @PutMapping("/{id}/profile")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<User> updateUserProfile(@PathVariable Integer id, @RequestBody UserDTO userProfileUpdateDto) {
         User updatedUser = userService.updateUserProfile(id, userProfileUpdateDto);
         return ResponseEntity.ok(updatedUser);
