@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -80,5 +82,23 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u WHERE u.activated = false AND u.creationTime <= :threshold")
     List<User> findInactiveUsers(@Param("threshold") LocalDateTime threshold);
+
+    Page<User> findAll(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE " +
+            "(:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "(:surname IS NULL OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) AND " +
+            "(:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
+            "(:minPosts = 0 OR SIZE(u.posts) >= :minPosts) AND " +
+            "(:maxPosts = 2147483647 OR SIZE(u.posts) <= :maxPosts)")
+    Page<User> searchUsersPaged(@Param("name") String name,
+                                @Param("surname") String surname,
+                                @Param("email") String email,
+                                @Param("minPosts") Integer minPosts,
+                                @Param("maxPosts") Integer maxPosts,
+                                Pageable pageable);
+
+
+
 }
 

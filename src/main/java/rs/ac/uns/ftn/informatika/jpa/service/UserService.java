@@ -3,6 +3,10 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -248,7 +252,7 @@ public ResponseEntity<UserTokenState> login(
         surname = (surname != null && !surname.isEmpty()) ? surname : "";
         email = (email != null && !email.isEmpty()) ? email : "";
         minPosts = (minPosts != null && minPosts > 0) ? minPosts : 0;
-        maxPosts = (maxPosts != null && maxPosts > 0) ? maxPosts : Integer.MAX_VALUE; 
+        maxPosts = (maxPosts != null && maxPosts > 0) ? maxPosts : Integer.MAX_VALUE;
 
         List<User> users = userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
         List<UserInfoDTO> userDTOs = new ArrayList<>();
@@ -467,5 +471,29 @@ public ResponseEntity<UserTokenState> login(
         deleteInactiveAccounts();
         System.out.println("Scheduled cleanup of inactive accounts completed.");
     }
+
+    // Metod za paginaciju svih korisnika
+    public Page<UserInfoDTO> getAllUsersPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findAll(pageable).map(UserInfoDTO::new);
+    }
+
+    // Metod za pretragu korisnika sa paginacijom
+    public Page<UserInfoDTO> searchUsersPaged(String name, String surname, String email, int minPosts, int maxPosts, int page, int size, String sortField, String sortDirection) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return userRepository.searchUsersPaged(name, surname, email, minPosts, maxPosts, pageable)
+                .map(user -> new UserInfoDTO(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getName(),
+                        user.getSurname(),
+                        user.getEmail(),
+                        user.getPosts().size(),
+                        user.getFollowing().size()
+                ));
+    }
+
+
 
 }

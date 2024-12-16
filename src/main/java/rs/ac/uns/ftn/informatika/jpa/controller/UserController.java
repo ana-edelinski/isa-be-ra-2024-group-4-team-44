@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatus;
@@ -170,5 +171,32 @@ public class UserController {
         List<UserInfoDTO> followers = userService.getFollowers(userId);
         return ResponseEntity.ok(followers);
     }
+
+    @GetMapping("/paged")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Page<UserInfoDTO>> getAllUsersPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<UserInfoDTO> usersPage = userService.getAllUsersPaged(page, size);
+        return ResponseEntity.ok(usersPage);
+    }
+
+    @GetMapping("/search-paged")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Page<UserInfoDTO>> searchUsersPaged(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String surname,
+            @RequestParam(required = false) String email,
+            @RequestParam(defaultValue = "0") int minPosts,
+            @RequestParam(defaultValue = "2147483647") int maxPosts,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortField, // Polje za sortiranje
+            @RequestParam(defaultValue = "asc") String sortDirection // Smer sortiranja
+    ) {
+        Page<UserInfoDTO> usersPage = userService.searchUsersPaged(name, surname, email, minPosts, maxPosts, page, size, sortField, sortDirection);
+        return ResponseEntity.ok(usersPage);
+    }
+
 
 }
