@@ -3,9 +3,9 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,11 +27,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
-import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 
 
 @Service
@@ -95,6 +95,7 @@ public class UserService implements UserDetailsService {
         user.setSurname(userDto.getSurname());
         user.setActivated(false);
         user.setEnabled(true);
+        user.setCreationTime(LocalDateTime.now());
 
         String activationToken = UUID.randomUUID().toString();
         user.setActivationToken(activationToken);
@@ -442,5 +443,29 @@ public ResponseEntity<UserTokenState> login(
         return userInfoDTOs;
     }
 
+    @Transactional
+    public void deleteInactiveAccounts() {
+        System.out.println("Method deleteInactiveAccounts started");
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        System.out.println(oneMonthAgo);
+        List<User> inactiveUsers = userRepository.findInactiveUsers(oneMonthAgo);
+
+        System.out.println("Number of inactive users found: " + inactiveUsers.size());
+
+        for (User user : inactiveUsers) {
+            System.out.println("Deleting user: " + user.getUsername());
+            userRepository.delete(user);
+        }
+        System.out.println("Method deleteInactiveAccounts completed");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 L * ?")
+    public void cleanUpInactiveAccounts() {
+        System.out.println("Scheduled task triggered");
+        LOG.info("Scheduled task triggered");
+        deleteInactiveAccounts();
+        System.out.println("Scheduled cleanup of inactive accounts completed.");
+    }
 
 }

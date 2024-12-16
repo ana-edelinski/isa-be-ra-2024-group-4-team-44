@@ -5,9 +5,9 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -73,8 +73,11 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "following", fetch = FetchType.EAGER)
     private Set<User> followers = new HashSet<>();
 
+    @Column(name = "creation_time", nullable = false, updatable = false)
+    private LocalDateTime creationTime;
 
-    public User (Integer id, String username, String name, String surname, String email, String password, boolean activated, Address address)
+
+    public User (Integer id, String username, String name, String surname, String email, String password, boolean activated, Address address, LocalDateTime creationTime)
     {
         this.id = id;
         this.username = username;
@@ -84,6 +87,7 @@ public class User implements UserDetails {
         this.password = password;
         this.activated = activated;
         this.address = address;
+        this.creationTime = creationTime != null ? creationTime : LocalDateTime.now();   //ako je null postavlja trenutni datum
     }
     public User() {}
     public Integer getId() {
@@ -227,4 +231,13 @@ public class User implements UserDetails {
     public void setFollowers(Set<User> followers) {
         this.followers = followers;
     }
+
+    public LocalDateTime getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(LocalDateTime creationTime) {
+        this.creationTime = creationTime;
+    }
+
 }
