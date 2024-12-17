@@ -81,5 +81,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
     Optional<User> findByIdWithLock(@Param("id") Integer id);
 
+    @Query("SELECT u.username FROM User u")
+    List<String> findAllUsernames();
+
 }
 

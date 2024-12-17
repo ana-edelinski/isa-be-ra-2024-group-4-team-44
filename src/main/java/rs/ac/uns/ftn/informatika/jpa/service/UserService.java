@@ -1,6 +1,9 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import com.google.common.hash.BloomFilter;
 import org.springframework.dao.DataIntegrityViolationException;
+import com.google.common.hash.Funnels;
+import java.nio.charset.StandardCharsets;
 
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -65,6 +68,8 @@ public class UserService implements UserDetailsService {
     @Autowired
     private RoleService roleService;
 
+    private BloomFilter<String> usernameBloomFilter;
+
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenUtils tokenUtils, AuthenticationManager authenticationManager) {
 
@@ -72,8 +77,23 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.tokenUtils = tokenUtils;
         this.authenticationManager = authenticationManager;
-    }
 
+        // Inicijalizacija Bloom filtera sa očekivanim brojem unosa i stopom greške
+        this.usernameBloomFilter = BloomFilter.create(
+                Funnels.stringFunnel(StandardCharsets.UTF_8),
+                10000, // Očekivani broj korisničkih imena
+                0.01   // Dozvoljena stopa greške (1%)
+        );
+
+        // Popunjavanje Bloom filtera postojećim korisničkim imenima
+        loadExistingUsernames();
+    }
+    private void loadExistingUsernames() {
+        List<String> usernames = userRepository.findAllUsernames();
+        for (String username : usernames) {
+            usernameBloomFilter.put(username);
+        }
+    }
     @Autowired
     private EmailService emailService;
 
@@ -94,6 +114,13 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByUsername(userDto.getUsername())) {
             return ResponseEntity.badRequest().body("Username already exists!");
         }
+        // Provera pomoću Bloom filtera
+        if (usernameBloomFilter.mightContain(userDto.getUsername())) {
+            // Dodatna provera u bazi (u slučaju false positive)
+            if (userRepository.existsByUsername(userDto.getUsername())) {
+                return ResponseEntity.badRequest().body("Username already exists!");
+            }
+        }
         if (userRepository.existsByEmail(userDto.getEmail())) {
             return ResponseEntity.badRequest().body("Email address already exists!");
         }
@@ -104,6 +131,8 @@ public class UserService implements UserDetailsService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        // Ako korisničko ime ne postoji, dodajte ga u Bloom filter
+        usernameBloomFilter.put(userDto.getUsername());
 
         User user = new User();
         user.setUsername(userDto.getUsername());

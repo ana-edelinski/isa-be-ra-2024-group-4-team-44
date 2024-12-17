@@ -1,3 +1,4 @@
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\LoginAttemptService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\repository\RoleRepository.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\PostDTO.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\exception\ResourceConflictException.java
@@ -7,6 +8,7 @@ C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\j
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\repository\UserRepository.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\UserService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\config\WebSecurityConfig.java
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\controller\TrendController.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\repository\CustomRepository.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\config\WebConfig.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\PostService.java
@@ -21,12 +23,14 @@ C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\j
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\auth\RestAuthenticationEntryPoint.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\controller\PostController.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\UserTokenState.java
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\TrendService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\UserRequest.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\CommentDTO.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\repository\AddressRepository.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\EmailService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\dto\UserInfoDTO.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\model\Post.java
+C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\service\impl\CustomUserDetailsService.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\ServletInitializer.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\controller\UserController.java
 C:\Users\KORISNIK\Desktop\ISA projekat\isa-be-ra-2024-group-4-team-44\src\main\java\rs\ac\uns\ftn\informatika\jpa\model\Address.java
