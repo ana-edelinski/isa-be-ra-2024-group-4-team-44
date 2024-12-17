@@ -1,6 +1,8 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
@@ -52,8 +54,8 @@ public class PostService {
         );
     }
 
-   
 
+    @CacheEvict(value = "postsCache", allEntries = true)
     public PostDTO createPost(PostDTO postDTO) {
         Post post = new Post();
         User user = userRepository.findById(postDTO.getCreatorId())
@@ -79,6 +81,7 @@ public class PostService {
         return postDTO;
     }
 
+    @CachePut(value = "postsCache", key = "#postId")
     public PostDTO updatePost(Integer id, PostDTO postDTO, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -93,6 +96,7 @@ public class PostService {
         return getById(id);
     }
 
+    @CacheEvict(value = "postsCache", key = "#postId")
     @Transactional
     public void deletePost(Integer id, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));

@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 @Service
 public class TrendService {
     private static final Logger log = LoggerFactory.getLogger(TrendService.class);
@@ -39,16 +42,18 @@ public class TrendService {
         this.postRepository = postRepository;
         this.likeRepository = likeRepository;
     }
+
+    @Cacheable(value = "postsCache", key = "'totalPosts'")
     public long getTotalNumberOfPosts() {
         return postRepository.countAllPosts(); // Pretpostavlja se da je metoda definisana u PostRepository.
     }
-
+    @Cacheable(value = "postsCache", key = "'postsLast30Days'")
     public long getNumberOfPostsInLast30Days() {
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
         return postRepository.countByCreationTimeAfter(thirtyDaysAgo);
     }
 
-
+    @Cacheable(value = "postsCache", key = "'topPosts7Days'")
     public List<Post> getTop5PostsInLast7Days() {
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
         log.info("Fetching top 5 posts created after: {}", sevenDaysAgo);
@@ -57,7 +62,7 @@ public class TrendService {
         return posts;
     }
 
-
+    @Cacheable(value = "postsCache", key = "'topPostsAllTime'")
     public List<Post> getTop10PostsOfAllTime() {
         List<Post> topPosts = postRepository.findTop10PostsOfAllTime();
         return topPosts.size() > 10 ? topPosts.subList(0, 10) : topPosts;  // Obezbeđuje da ne pređemo 10 postova
@@ -65,7 +70,7 @@ public class TrendService {
 
 
 
-
+    @Cacheable(value = "usersCache", key = "'topUsers7Days'")
     public List<Map<String, Object>> getTop10UsersByLikesGivenInLast7Days() {
         // Datum pre 7 dana
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
