@@ -16,6 +16,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -142,6 +143,7 @@ public class PostService {
             Like newLike = new Like();
             newLike.setPost(post);
             newLike.setUser(user);
+            newLike.setCreationTime(LocalDateTime.now());
             likeRepository.save(newLike);
         }
     }
