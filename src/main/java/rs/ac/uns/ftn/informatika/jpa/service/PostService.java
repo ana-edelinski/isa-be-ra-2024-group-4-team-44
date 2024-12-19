@@ -82,7 +82,7 @@ public class PostService {
         return postDTO;
     }
 
-    @CachePut(value = "postsCache", key = "#postId")
+    //@CachePut(value = "postsCache", key = "#postId")
     public PostDTO updatePost(Integer id, PostDTO postDTO, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
 
