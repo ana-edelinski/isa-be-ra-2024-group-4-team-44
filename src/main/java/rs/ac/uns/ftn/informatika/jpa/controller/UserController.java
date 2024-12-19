@@ -4,21 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
-import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
+import rs.ac.uns.ftn.informatika.jpa.dto.*;
+import rs.ac.uns.ftn.informatika.jpa.service.LoginAttemptService;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
+
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
@@ -33,6 +27,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @PostMapping("/register")
 
@@ -42,11 +38,28 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDto, HttpServletResponse response) {
-        // Kreiraj JwtAuthenticationRequest sa podacima iz UserDTO
-        JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest(userDto.getUsername(), userDto.getPassword());
+//        // Kreiraj JwtAuthenticationRequest sa podacima iz UserDTO
+//        JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest(userDto.getUsername(), userDto.getPassword());
+//
+//        // Pozovi servisnu metodu koja prihvata JwtAuthenticationRequest
+//        return userService.login(authenticationRequest, response);
 
-        // Pozovi servisnu metodu koja prihvata JwtAuthenticationRequest
-        return userService.login(authenticationRequest, response);
+
+        String clientIp = userService.getClientIP();
+
+        if (loginAttemptService.isBlocked(clientIp)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Previše neuspelih pokušaja. Pokušajte ponovo kasnije.");
+        }
+
+        try {
+            JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest(userDto.getUsername(), userDto.getPassword());
+            ResponseEntity<UserTokenState> result = userService.login(authenticationRequest, response);
+            loginAttemptService.loginSucceeded(clientIp);
+            return result;
+        } catch (Exception e) {
+            loginAttemptService.loginFailed(clientIp);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Neuspešna prijava.");
+        }
     }
 
 
@@ -56,7 +69,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/changePassword")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<?> changePassword(@PathVariable Integer id, @RequestBody ChangePasswordDTO changePasswordDTO) {
         userService.changePassword(id, changePasswordDTO);
         return ResponseEntity.ok("Password updated successfully");
@@ -69,14 +82,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}/profile")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<UserDTO> getUserProfile(@PathVariable Integer id) {
         UserDTO userProfileDto = userService.getUserProfile(id);
         return ResponseEntity.ok(userProfileDto);
     }
 
     @PutMapping("/{id}/profile")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     public ResponseEntity<User> updateUserProfile(@PathVariable Integer id, @RequestBody UserDTO userProfileUpdateDto) {
         User updatedUser = userService.updateUserProfile(id, userProfileUpdateDto);
         return ResponseEntity.ok(updatedUser);

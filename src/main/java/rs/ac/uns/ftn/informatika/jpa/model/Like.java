@@ -1,6 +1,9 @@
 package rs.ac.uns.ftn.informatika.jpa.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "likes")
@@ -13,16 +16,21 @@ public class Like {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
 
+    @Column(name = "creation_time", nullable = false)
+    private LocalDateTime creationTime;
+
     public Like() {}
 
-    public Like(Integer id, User user, Post post) {
+    public Like(Integer id, User user, Post post, LocalDateTime creationTime) {
         this.id = id;
         this.user = user;
         this.post = post;
+        this.creationTime = creationTime;
     }
 
     public Integer getId() {
@@ -47,5 +55,12 @@ public class Like {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    public LocalDateTime getCreationTime() {
+        return creationTime;
+    }
+    public void setCreationTime(LocalDateTime creationTime) {
+        this.creationTime = creationTime;
     }
 }

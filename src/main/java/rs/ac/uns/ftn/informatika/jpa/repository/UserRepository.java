@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
+import java.time.LocalDate;
+
 import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
 import java.time.LocalDateTime;
@@ -38,6 +40,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT ur.role_id FROM user_role ur WHERE ur.user_id = :userId", nativeQuery = true)
     Integer findRoleIdByUserId(@Param("userId") Integer userId);
+
 
     @Query("SELECT CASE WHEN COUNT(uf) > 0 THEN TRUE ELSE FALSE END " +
             "FROM User u JOIN u.following uf WHERE u.id = :followerId AND uf.id = :followingId")
@@ -83,6 +86,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 
 
+    @Query("SELECT u.username FROM User u")
+    List<String> findAllUsernames();
 
 }
 
