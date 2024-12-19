@@ -29,6 +29,7 @@ public class JpaExampleApplication {
 		SpringApplication.run(JpaExampleApplication.class, args);
 	}
 
+//Ana: ovo mi treba da ostane za odbranu!!!
 //	@PostConstruct
 //	public void testConcurrency() {
 //		new Thread(() -> userService.simulateFollowWithDelay(1, 2)).start();

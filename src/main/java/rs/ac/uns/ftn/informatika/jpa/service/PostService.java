@@ -97,7 +97,7 @@ public class PostService {
         return getById(id);
     }
 
-    @CacheEvict(value = "postsCache", key = "#postId")
+    //@CacheEvict(value = "postsCache", key = "#postId")
     @Transactional
     public void deletePost(Integer id, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
