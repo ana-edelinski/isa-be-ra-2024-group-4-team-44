@@ -164,4 +164,14 @@ public class PostController {
         }
     }
 
+    @GetMapping("/nearby")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    public ResponseEntity<List<PostDTO>> getNearbyPosts(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam Double radius) {
+        List<PostDTO> nearbyPosts = postService.findNearbyPosts(latitude, longitude, radius);
+        return ResponseEntity.ok(nearbyPosts);
+    }
+
 }

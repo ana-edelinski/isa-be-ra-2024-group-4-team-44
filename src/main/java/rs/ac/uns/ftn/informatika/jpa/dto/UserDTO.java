@@ -13,11 +13,13 @@ public class UserDTO {
     private String street;
     private String city;
     private String postalCode;
+    private Double latitude;
+    private Double longitude;
 
     public UserDTO(){
 
     }
-    public UserDTO(Integer id, String email, String username, String name, String surname, String password, String confirmPassword, String street, String city, String postalCode) {
+    public UserDTO(Integer id, String email, String username, String name, String surname, String password, String confirmPassword, String street, String city, String postalCode, Double latitude, Double longitude) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -28,6 +30,8 @@ public class UserDTO {
         this.street = street;
         this.city = city;
         this.postalCode = postalCode;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public UserDTO(User user) {
@@ -42,6 +46,8 @@ public class UserDTO {
             this.street = user.getAddress().getStreet();
             this.city = user.getAddress().getCity();
             this.postalCode = user.getAddress().getPostalCode();
+            this.latitude = user.getAddress().getLatitude();
+            this.longitude = user.getAddress().getLongitude();
         }
     }
     public Integer getId() {
@@ -75,5 +81,11 @@ public class UserDTO {
     }
     public String getPostalCode() {
         return postalCode;
+    }
+    public Double getLatitude() {
+        return latitude;
+    }
+    public Double getLongitude() {
+        return longitude;
     }
 }
