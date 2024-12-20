@@ -9,10 +9,13 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Isolation;
 import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,13 +38,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
-import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 import java.util.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 
 
 @Service
@@ -142,6 +144,7 @@ public class UserService implements UserDetailsService {
         user.setSurname(userDto.getSurname());
         user.setActivated(false);
         user.setEnabled(true);
+        user.setCreationTime(LocalDateTime.now());
 
         String activationToken = UUID.randomUUID().toString();
         user.setActivationToken(activationToken);
@@ -283,84 +286,6 @@ public ResponseEntity<UserTokenState> login(
         return userDTOs;
     }
 
-
-    public List<UserInfoDTO> searchUsers(String name, String surname, String email, Integer minPosts, Integer maxPosts) {
-        // Osiguraj da su parametri prazni stringovi ako nisu prosleđeni
-        name = (name != null && !name.isEmpty()) ? name : "";
-        surname = (surname != null && !surname.isEmpty()) ? surname : "";
-        email = (email != null && !email.isEmpty()) ? email : "";
-        minPosts = (minPosts != null && minPosts > 0) ? minPosts : 0;
-        maxPosts = (maxPosts != null && maxPosts > 0) ? maxPosts : Integer.MAX_VALUE; 
-
-        List<User> users = userRepository.searchUsers(name, surname, email, minPosts, maxPosts);
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-
-        return userDTOs;
-    }
-
-
-
-    public List<UserInfoDTO> getUsersSortedByFollowingCountAsc() {
-        List<User> users = userRepository.findAllSortedByFollowingCountAsc();
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-
-        return userDTOs;
-    }
-
-
-    public List<UserInfoDTO> getUsersSortedByFollowingCountDesc() {
-        List<User> users = userRepository.findAllSortedByFollowingCountDesc();
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-        return userDTOs;
-    }
-
-    public List<UserInfoDTO> getUsersSortedByEmailAsc() {
-        List<User> users = userRepository.findAllSortedByEmailAsc();
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-        return userDTOs;
-    }
-
-    public List<UserInfoDTO> getUsersSortedByEmailDesc() {
-        List<User> users = userRepository.findAllSortedByEmailDesc();
-        List<UserInfoDTO> userDTOs = new ArrayList<>();
-
-        for (User user : users) {
-            Integer numberOfPosts = user.getPosts().size();
-            Integer numberOfFollowing = user.getFollowing().size();
-            UserInfoDTO userDTO = new UserInfoDTO(user.getId(), user.getUsername(), user.getName(), user.getSurname(), user.getEmail(), numberOfPosts, numberOfFollowing);
-            userDTOs.add(userDTO);
-        }
-        return userDTOs;
-    }
-
     public Integer getRole(Integer userId){
         return userRepository.findRoleIdByUserId(userId);
     }
@@ -497,5 +422,63 @@ public ResponseEntity<UserTokenState> login(
 
         return userInfoDTOs;
     }
+
+    @Transactional
+    public void deleteInactiveAccounts() {
+        System.out.println("Method deleteInactiveAccounts started");
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        System.out.println(oneMonthAgo);
+        List<User> inactiveUsers = userRepository.findInactiveUsers(oneMonthAgo);
+
+        System.out.println("Number of inactive users found: " + inactiveUsers.size());
+
+        for (User user : inactiveUsers) {
+            System.out.println("Deleting user: " + user.getUsername());
+            userRepository.delete(user);
+        }
+        System.out.println("Method deleteInactiveAccounts completed");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 L * ?")
+    public void cleanUpInactiveAccounts() {
+        System.out.println("Scheduled task triggered");
+        LOG.info("Scheduled task triggered");
+        deleteInactiveAccounts();
+        System.out.println("Scheduled cleanup of inactive accounts completed.");
+    }
+
+    public Page<UserInfoDTO> getAllUsersPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findAll(pageable).map(UserInfoDTO::new);
+    }
+
+    public Page<UserInfoDTO> searchUsers(String name, String surname, String email, int minPosts, int maxPosts, String sortField, String sortDirection, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> users = userRepository.searchUsers(
+                name,
+                surname,
+                email,
+                minPosts,
+                maxPosts,
+                sortField,
+                sortDirection,
+                pageable
+        );
+
+        return users.map(user -> new UserInfoDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getName(),
+                user.getSurname(),
+                user.getEmail(),
+                user.getPosts().size(),
+                user.getFollowing().size()
+        ));
+    }
+
+
+
 
 }

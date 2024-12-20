@@ -7,11 +7,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
+@EnableScheduling
 @EnableCaching
 public class JpaExampleApplication {
 
@@ -27,6 +29,7 @@ public class JpaExampleApplication {
 		SpringApplication.run(JpaExampleApplication.class, args);
 	}
 
+//Ana: ovo mi treba da ostane za odbranu!!!
 //	@PostConstruct
 //	public void testConcurrency() {
 //		new Thread(() -> userService.simulateFollowWithDelay(1, 2)).start();

@@ -16,6 +16,7 @@ import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,7 +86,7 @@ public class PostService {
         return postDTO;
     }
 
-    @CachePut(value = "postsCache", key = "#postId")
+    //@CachePut(value = "postsCache", key = "#postId")
     public PostDTO updatePost(Integer id, PostDTO postDTO, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -100,7 +101,7 @@ public class PostService {
         return getById(id);
     }
 
-    @CacheEvict(value = "postsCache", key = "#postId")
+    //@CacheEvict(value = "postsCache", key = "#postId")
     @Transactional
     public void deletePost(Integer id, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
@@ -146,6 +147,7 @@ public class PostService {
             Like newLike = new Like();
             newLike.setPost(post);
             newLike.setUser(user);
+            newLike.setCreationTime(LocalDateTime.now());
             likeRepository.save(newLike);
         }
     }

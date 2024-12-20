@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
 
+import rs.ac.uns.ftn.informatika.jpa.model.User;
+
 public class UserInfoDTO {
     private Integer id;
     private String username;
@@ -18,6 +20,17 @@ public class UserInfoDTO {
         this.numberOfPosts = numberOfPosts;
         this.numberOfFollowing = numberOfFollowing;
     }
+
+    public UserInfoDTO(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.name = user.getName();
+        this.surname = user.getSurname();
+        this.email = user.getEmail();
+        this.numberOfPosts = user.getPosts() != null ? user.getPosts().size() : 0;
+        this.numberOfFollowing = user.getFollowing() != null ? user.getFollowing().size() : 0;
+    }
+
 
     public Integer getId() {
         return id;

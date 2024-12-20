@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,42 +109,6 @@ public class UserController {
         return ResponseEntity.ok(usersInfo);
     }
 
-    @GetMapping("/search")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<UserInfoDTO>> searchUsers(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String surname,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) Integer minPosts,
-            @RequestParam(required = false) Integer maxPosts) {
-        List<UserInfoDTO> users = userService.searchUsers(name, surname, email, minPosts, maxPosts);
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
-    @GetMapping("/sort/following/asc")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public List<UserInfoDTO> getUsersSortedByFollowingAsc() {
-        return userService.getUsersSortedByFollowingCountAsc();
-    }
-
-    @GetMapping("/sort/following/desc")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public List<UserInfoDTO> getUsersSortedByFollowingDesc() {
-        return userService.getUsersSortedByFollowingCountDesc();
-    }
-
-    @GetMapping("/sort/email/asc")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public List<UserInfoDTO> getUsersSortedByEmailAsc() {
-        return userService.getUsersSortedByEmailAsc();
-    }
-
-    @GetMapping("/sort/email/desc")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public List<UserInfoDTO> getUsersSortedByEmailDesc() {
-        return userService.getUsersSortedByEmailDesc();
-    }
-
     @GetMapping("/role/{id}")
     public Integer getRole(@PathVariable Integer id){
         Integer role = userService.getRole(id);
@@ -183,5 +148,33 @@ public class UserController {
         List<UserInfoDTO> followers = userService.getFollowers(userId);
         return ResponseEntity.ok(followers);
     }
+
+    @GetMapping("/paged")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Page<UserInfoDTO>> getAllUsersPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<UserInfoDTO> usersPage = userService.getAllUsersPaged(page, size);
+        return ResponseEntity.ok(usersPage);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Page<UserInfoDTO>> searchUsers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String surname,
+            @RequestParam(required = false) String email,
+            @RequestParam(defaultValue = "0") int minPosts,
+            @RequestParam(defaultValue = "2147483647") int maxPosts,
+            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<UserInfoDTO> usersPage = userService.searchUsers(name, surname, email, minPosts, maxPosts, sortField, sortDirection, page, size);
+        return ResponseEntity.ok(usersPage);
+    }
+
+
 
 }
