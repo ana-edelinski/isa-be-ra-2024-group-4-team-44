@@ -17,6 +17,8 @@ public class PostDTO {
     private String locationStreet;
     private String locationCity;
     private String locationPostalCode;
+    private Double locationLatitude;
+    private Double locationLongitude;
     private List<CommentDTO> comments;
     private int likeCount;
 
@@ -24,7 +26,8 @@ public class PostDTO {
 
     public PostDTO(Integer id, Integer creatorId, String creatorUsername, String description,
                    LocalDateTime creationTime, String imagePath, Integer locationId,
-                   String locationStreet, String locationCity, String locationPostalCode, List<CommentDTO> comments, int likeCount) {
+                   String locationStreet, String locationCity, String locationPostalCode, List<CommentDTO> comments, int likeCount,
+                    Double locationLatitude, Double locationLongitude) {
         this.id = id;
         this.creatorId = creatorId;
         this.creatorUsername = creatorUsername;
@@ -37,6 +40,8 @@ public class PostDTO {
         this.locationPostalCode = locationPostalCode;
         this.comments = comments;
         this.likeCount = likeCount;
+        this.locationLatitude = locationLatitude;
+        this.locationLongitude = locationLongitude;
     }
 
     public PostDTO(Post post) {
@@ -52,6 +57,8 @@ public class PostDTO {
             this.locationStreet = post.getLocation().getStreet();
             this.locationCity = post.getLocation().getCity();
             this.locationPostalCode = post.getLocation().getPostalCode();
+            this.locationLatitude = post.getLocation().getLatitude();
+            this.locationLongitude = post.getLocation().getLongitude();
         }
 
         this.likeCount = post.getLikes().size();
@@ -110,5 +117,12 @@ public class PostDTO {
 
     public int getLikeCount() {
         return likeCount;
+    }
+
+    public Double getLocationLatitude() {
+        return locationLatitude;
+    }
+    public Double getLocationLongitude() {
+        return locationLongitude;
     }
 }

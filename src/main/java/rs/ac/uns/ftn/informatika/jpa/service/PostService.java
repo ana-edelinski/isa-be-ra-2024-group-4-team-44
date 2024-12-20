@@ -50,12 +50,14 @@ public class PostService {
                 post.getLocation() != null ? post.getLocation().getCity() : null,
                 post.getLocation() != null ? post.getLocation().getPostalCode() : null,
                 post.getComments().stream().map(CommentDTO::new).collect(Collectors.toList()),
-                likeCount
+                likeCount,
+                post.getLocation() != null ? post.getLocation().getLatitude() : null,
+                post.getLocation() != null ? post.getLocation().getLongitude() : null
         );
     }
 
 
-    @CacheEvict(value = "postsCache", allEntries = true)
+    //@CacheEvict(value = "postsCache", allEntries = true)
     public PostDTO createPost(PostDTO postDTO) {
         Post post = new Post();
         User user = userRepository.findById(postDTO.getCreatorId())
@@ -73,6 +75,8 @@ public class PostService {
         address.setCity(postDTO.getLocationCity());
         address.setStreet(postDTO.getLocationStreet());
         address.setPostalCode(postDTO.getLocationPostalCode());
+        address.setLatitude(postDTO.getLocationLatitude());
+        address.setLongitude(postDTO.getLocationLongitude());
         addressRepository.save(address);
         post.setLocation(address);
 
@@ -161,5 +165,14 @@ public class PostService {
                 .map(PostDTO::new)
                 .collect(Collectors.toList());
     }
+
+public List<PostDTO> findNearbyPosts(Double latitude, Double longitude, Double radius) {
+
+    List<Post> nearbyPosts = postRepository.findNearby(latitude, longitude, radius);
+
+    return nearbyPosts.stream()
+            .map(PostDTO::new)
+            .collect(Collectors.toList());
+}
 
 }
