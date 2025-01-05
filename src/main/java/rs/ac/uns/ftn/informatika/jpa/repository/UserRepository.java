@@ -83,11 +83,16 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             @Param("sortDirection") String sortDirection,
             Pageable pageable);
 
-
-
-
     @Query("SELECT u.username FROM User u")
     List<String> findAllUsernames();
 
+    @Query("SELECT COUNT(DISTINCT p.creator.id) FROM Post p")
+    long countUsersWithPosts();
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.id NOT IN (SELECT DISTINCT p.creator.id FROM Post p) AND u.id IN (SELECT DISTINCT c.user.id FROM Comment c)")
+    long countUsersWithOnlyComments();
+
+    @Query("SELECT COUNT(u) FROM User u")
+    long countAllUsers();
 }
 

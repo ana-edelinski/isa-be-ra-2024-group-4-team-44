@@ -28,5 +28,11 @@ public class AnalyticsController {
     public ResponseEntity<Map<String, Long>> getCommentCounts() {
         return ResponseEntity.ok(analyticsService.getCommentCounts());
     }
+
+    @GetMapping("/user-engagement")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Map<String, Double>> getUserEngagementStatistics() {
+        return ResponseEntity.ok(analyticsService.getUserEngagementStatistics());
+    }
 }
 

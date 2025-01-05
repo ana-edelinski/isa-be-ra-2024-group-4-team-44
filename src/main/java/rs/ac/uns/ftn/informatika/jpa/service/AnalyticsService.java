@@ -52,4 +52,19 @@ public class AnalyticsService {
 
         return result;
     }
+
+    public Map<String, Double> getUserEngagementStatistics() {
+        long totalUsers = userRepository.countAllUsers();
+
+        long usersWithPosts = userRepository.countUsersWithPosts();
+        long usersWithOnlyComments = userRepository.countUsersWithOnlyComments();
+        long inactiveUsers = totalUsers - usersWithPosts - usersWithOnlyComments;
+
+        Map<String, Double> statistics = new HashMap<>();
+        statistics.put("users_with_posts", (usersWithPosts / (double) totalUsers) * 100);
+        statistics.put("users_with_only_comments", (usersWithOnlyComments / (double) totalUsers) * 100);
+        statistics.put("inactive_users", (inactiveUsers / (double) totalUsers) * 100);
+
+        return statistics;
+    }
 }
