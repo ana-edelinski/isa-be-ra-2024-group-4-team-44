@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class LocationMessage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "name", unique = true, nullable = false)

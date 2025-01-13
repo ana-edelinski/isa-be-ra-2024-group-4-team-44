@@ -26,6 +26,7 @@ public class LocationMessageService {
     public LocationMessageDTO save(LocationMessageDTO locationMessageDto) {
         // Map DTO to Entity
         LocationMessage locationMessage = new LocationMessage();
+        locationMessage.setId(locationMessageDto.getId());
         locationMessage.setName(locationMessageDto.getName());
         locationMessage.setStreet(locationMessageDto.getStreet());
         locationMessage.setCity(locationMessageDto.getCity());

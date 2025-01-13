@@ -11,6 +11,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rs.ac.uns.ftn.informatika.jpa.dto.LocationMessageDTO;
+import rs.ac.uns.ftn.informatika.jpa.service.LocationMessageService;
 
 @Component
 public class Consumer2 {
@@ -23,6 +24,10 @@ public class Consumer2 {
     public Consumer2(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
+
+    @Autowired
+    LocationMessageService locationService;
+
     @RabbitListener(queues = "${myqueue2}")
     public void handler(String message) {
         try {
@@ -30,6 +35,7 @@ public class Consumer2 {
             LocationMessageDTO locationMessage = objectMapper.readValue(message, LocationMessageDTO.class);
             log.info("Deserialized LocationMessage: " + locationMessage.getName());
             log.info("Consumer2> " + message);
+            locationService.save(locationMessage);
         } catch (Exception e) {
             log.error("Error while processing message: ", e);
         }

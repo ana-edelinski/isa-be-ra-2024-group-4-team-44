@@ -7,7 +7,9 @@ import java.io.Serializable;
 
 public class LocationMessageDTO implements Serializable {
 
+    @JsonProperty("id")
     private Integer id;
+
     private String name;
     private String street;
     private String city;
@@ -90,5 +92,6 @@ public class LocationMessageDTO implements Serializable {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
+
 }
 
