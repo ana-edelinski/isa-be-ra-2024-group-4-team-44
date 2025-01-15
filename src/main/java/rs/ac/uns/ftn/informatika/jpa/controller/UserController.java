@@ -38,12 +38,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDto, HttpServletResponse response) {
-//        // Kreiraj JwtAuthenticationRequest sa podacima iz UserDTO
-//        JwtAuthenticationRequest authenticationRequest = new JwtAuthenticationRequest(userDto.getUsername(), userDto.getPassword());
-//
-//        // Pozovi servisnu metodu koja prihvata JwtAuthenticationRequest
-//        return userService.login(authenticationRequest, response);
-
 
         String clientIp = userService.getClientIP();
 
