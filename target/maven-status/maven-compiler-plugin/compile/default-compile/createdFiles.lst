@@ -20,6 +20,7 @@ rs\ac\uns\ftn\informatika\jpa\JpaExampleApplication.class
 rs\ac\uns\ftn\informatika\jpa\model\Consumer.class
 rs\ac\uns\ftn\informatika\jpa\auth\TokenBasedAuthentication.class
 rs\ac\uns\ftn\informatika\jpa\repository\PostRepository.class
+rs\ac\uns\ftn\informatika\jpa\controller\LocationMessageController.class
 rs\ac\uns\ftn\informatika\jpa\ServletInitializer.class
 rs\ac\uns\ftn\informatika\jpa\service\PostService.class
 rs\ac\uns\ftn\informatika\jpa\service\EmailService.class
