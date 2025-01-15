@@ -153,6 +153,8 @@ public class UserService implements UserDetailsService {
         address.setStreet(userDto.getStreet());
         address.setCity(userDto.getCity());
         address.setPostalCode(userDto.getPostalCode());
+        address.setLatitude(userDto.getLatitude());
+        address.setLongitude(userDto.getLongitude());
         user.setAddress(address);
 
         List<Role> roles = roleService.findByName("ROLE_USER");
@@ -253,6 +255,8 @@ public ResponseEntity<UserTokenState> login(
         address.setStreet(userProfileUpdateDto.getStreet());
         address.setCity(userProfileUpdateDto.getCity());
         address.setPostalCode(userProfileUpdateDto.getPostalCode());
+        address.setLatitude(userProfileUpdateDto.getLatitude());
+        address.setLongitude(userProfileUpdateDto.getLongitude());
 
         user.setAddress(address);
 
