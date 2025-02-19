@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.informatika.jpa.dto.MessageDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Message;
@@ -22,6 +23,9 @@ public class MessageService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     public List<MessageDTO> getChatHistory(Integer userId1, Integer userId2) {
         User user1 = userRepository.findById(userId1)
@@ -69,7 +73,11 @@ public class MessageService {
         message.setTimestamp(LocalDateTime.now());
 
         Message savedMessage = messageRepository.save(message);
-        return convertToDTO(savedMessage);
+        MessageDTO messageDTO = convertToDTO(savedMessage);
+
+        messagingTemplate.convertAndSend("/topic/messages/" + receiverId, messageDTO);
+
+        return messageDTO;
     }
 
     @Transactional
