@@ -39,7 +39,9 @@ public class JpaExampleApplicationTests {
 				"password123",
 				"Street 1",
 				"City A",
-				"10000"
+				"10000",
+				31.333,
+				40.111
 		);
 
 		UserDTO user2 = new UserDTO(
@@ -52,7 +54,9 @@ public class JpaExampleApplicationTests {
 				"password123",
 				"Street 2",
 				"City B",
-				"20000"
+				"20000",
+				40.232,
+				22.555
 		);
 
 		// Simuliramo konkurentni poziv na register metodu
