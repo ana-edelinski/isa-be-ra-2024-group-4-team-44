@@ -1,6 +1,8 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
@@ -14,10 +16,8 @@ import rs.ac.uns.ftn.informatika.jpa.repository.PostRepository;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,8 +55,8 @@ public class PostService {
         );
     }
 
-   
 
+    @CacheEvict(value = "postsCache", allEntries = true)
     public PostDTO createPost(PostDTO postDTO) {
         Post post = new Post();
         User user = userRepository.findById(postDTO.getCreatorId())
@@ -82,6 +82,7 @@ public class PostService {
         return postDTO;
     }
 
+    //@CachePut(value = "postsCache", key = "#postId")
     public PostDTO updatePost(Integer id, PostDTO postDTO, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -96,6 +97,7 @@ public class PostService {
         return getById(id);
     }
 
+    //@CacheEvict(value = "postsCache", key = "#postId")
     @Transactional
     public void deletePost(Integer id, Integer userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
@@ -125,10 +127,6 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public int getLikesCountByPostId(Integer postId) {
-        return likeRepository.countByPostId(postId);
-    }
-
     public void likeUnlikePost(Integer postId, Integer userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -145,8 +143,25 @@ public class PostService {
             Like newLike = new Like();
             newLike.setPost(post);
             newLike.setUser(user);
+            newLike.setCreationTime(LocalDateTime.now());
             likeRepository.save(newLike);
         }
+    }
+
+    public List<PostDTO> getPostsFromFollowing(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Set<User> followingUsers = user.getFollowing();
+
+        if (followingUsers.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Post> posts = postRepository.findPostsByFollowingUsers(followingUsers);
+        return posts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
     }
 
 }

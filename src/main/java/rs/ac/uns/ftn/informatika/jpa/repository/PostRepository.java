@@ -3,11 +3,17 @@ package rs.ac.uns.ftn.informatika.jpa.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
+import rs.ac.uns.ftn.informatika.jpa.model.User;
 
 import javax.transaction.Transactional;
+import java.awt.print.Pageable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface PostRepository  extends JpaRepository<Post, Integer> {
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.comments WHERE p.id = ?1")
@@ -33,4 +39,22 @@ public interface PostRepository  extends JpaRepository<Post, Integer> {
     @Transactional
     @Query("DELETE FROM Post p WHERE p.id = :postId")
     void deletePostById(Integer postId);
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.creationTime > :date")
+    long countByCreationTimeAfter(@Param("date") LocalDateTime date);
+
+    @Query("SELECT p FROM Post p LEFT JOIN p.likes l WHERE p.creationTime > :date GROUP BY p ORDER BY COUNT(l) DESC")
+    List<Post> findTop5ByCreationTimeAfterOrderByLikesDesc(@Param("date") LocalDateTime date);
+
+
+    @Query("SELECT p FROM Post p LEFT JOIN p.likes l GROUP BY p ORDER BY COUNT(l) DESC")
+    List<Post> findTop10PostsOfAllTime();
+
+
+    @Query("SELECT COUNT(p) FROM Post p")
+    long countAllPosts();
+
+    @Query("SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.comments LEFT JOIN FETCH p.likes WHERE p.creator IN :followingUsers")
+    List<Post> findPostsByFollowingUsers(@Param("followingUsers") Set<User> followingUsers);
+
 }

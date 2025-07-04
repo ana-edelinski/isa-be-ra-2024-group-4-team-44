@@ -1,10 +1,19 @@
 package rs.ac.uns.ftn.informatika.jpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 
+import java.time.LocalDate;
+
+import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,33 +38,56 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByActivationToken(String activationToken);
 
-    @Query("SELECT u FROM User u WHERE " +
-            "(:name = '' OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
-            "(:surname = '' OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) AND " +
-            "(:email = '' OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
-            "(:minPosts = 0 OR SIZE(u.posts) >= :minPosts) AND " +
-            "(:maxPosts = 2147483647 OR SIZE(u.posts) <= :maxPosts)")
-    List<User> searchUsers(@Param("name") String name,
-                           @Param("surname") String surname,
-                           @Param("email") String email,
-                           @Param("minPosts") Integer minPosts,
-                           @Param("maxPosts") Integer maxPosts);
-
-
-
-    @Query("SELECT u FROM User u ORDER BY SIZE(u.following) ASC")
-    List<User> findAllSortedByFollowingCountAsc();
-
-    @Query("SELECT u FROM User u ORDER BY SIZE(u.following) DESC") 
-    List<User> findAllSortedByFollowingCountDesc();
-
-    @Query("SELECT u FROM User u ORDER BY u.email ASC")
-    List<User> findAllSortedByEmailAsc();
-
-    @Query("SELECT u FROM User u ORDER BY u.email DESC")
-    List<User> findAllSortedByEmailDesc();
-
     @Query(value = "SELECT ur.role_id FROM user_role ur WHERE ur.user_id = :userId", nativeQuery = true)
     Integer findRoleIdByUserId(@Param("userId") Integer userId);
+
+
+    @Query("SELECT CASE WHEN COUNT(uf) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM User u JOIN u.following uf WHERE u.id = :followerId AND uf.id = :followingId")
+    boolean isFollowing(@Param("followerId") Integer followerId, @Param("followingId") Integer followingId);
+
+    @Query("SELECT u.following FROM User u WHERE u.id = :userId")
+    List<User> findFollowingByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT u FROM User u JOIN u.following f WHERE f.id = :userId")
+    List<User> findFollowersByUserId(@Param("userId") Integer userId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
+    Optional<User> findByIdWithLock(@Param("id") Integer id);
+
+    @Query("SELECT u FROM User u WHERE u.activated = false AND u.creationTime <= :threshold")
+    List<User> findInactiveUsers(@Param("threshold") LocalDateTime threshold);
+
+    Page<User> findAll(Pageable pageable);
+
+    @Query("SELECT u FROM User u " +
+            "WHERE (:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "(:surname IS NULL OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) AND " +
+            "(:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
+            "(:minPosts = 0 OR SIZE(u.posts) >= :minPosts) AND " +
+            "(:maxPosts = 2147483647 OR SIZE(u.posts) <= :maxPosts) " +
+            "ORDER BY " +
+            "CASE WHEN :sortField = 'following' AND :sortDirection = 'asc' THEN SIZE(u.following) END ASC, " +
+            "CASE WHEN :sortField = 'following' AND :sortDirection = 'desc' THEN SIZE(u.following) END DESC, " +
+            "CASE WHEN :sortField = 'email' AND :sortDirection = 'asc' THEN u.email END ASC, " +
+            "CASE WHEN :sortField = 'email' AND :sortDirection = 'desc' THEN u.email END DESC")
+    Page<User> searchUsers(
+            @Param("name") String name,
+            @Param("surname") String surname,
+            @Param("email") String email,
+            @Param("minPosts") Integer minPosts,
+            @Param("maxPosts") Integer maxPosts,
+            @Param("sortField") String sortField,
+            @Param("sortDirection") String sortDirection,
+            Pageable pageable);
+
+
+
+
+    @Query("SELECT u.username FROM User u")
+    List<String> findAllUsernames();
+
 }
 
