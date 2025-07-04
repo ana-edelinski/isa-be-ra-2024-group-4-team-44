@@ -29,6 +29,7 @@ public class GroupChatService {
         GroupChat group = new GroupChat();
         group.setName(dto.getName());
         group.setMemberIds(dto.getMemberIds());
+        group.setCreatorId(dto.getCreatorId());
 
         groupChatRepository.save(group);
         return new GroupChatDTO(group);

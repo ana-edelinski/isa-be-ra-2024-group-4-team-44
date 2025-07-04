@@ -21,6 +21,10 @@ public class GroupChat {
     @Column(columnDefinition = "jsonb")
     private List<Integer> memberIds;
 
+    @Column(nullable = false)
+    private Integer creatorId;
+
+
     public Integer getId() {
         return id;
     }
@@ -44,4 +48,13 @@ public class GroupChat {
     public void setMemberIds(List<Integer> memberIds) {
         this.memberIds = memberIds;
     }
+
+    public Integer getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Integer creatorId) {
+        this.creatorId = creatorId;
+    }
+
 }

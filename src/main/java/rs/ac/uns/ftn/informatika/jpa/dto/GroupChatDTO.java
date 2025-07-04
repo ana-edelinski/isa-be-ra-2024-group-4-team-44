@@ -10,6 +10,7 @@ public class GroupChatDTO {
     private Integer id;
     private String name;
     private List<Integer> memberIds;
+    private Integer creatorId;
 
     public GroupChatDTO() {}
 
@@ -17,6 +18,7 @@ public class GroupChatDTO {
         this.id = group.getId();
         this.name = group.getName();
         this.memberIds = group.getMemberIds();
+        this.creatorId = group.getCreatorId();
     }
 
     public Integer getId() {
@@ -41,6 +43,14 @@ public class GroupChatDTO {
 
     public void setMemberIds(List<Integer> memberIds) {
         this.memberIds = memberIds;
+    }
+
+    public Integer getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Integer creatorId) {
+        this.creatorId = creatorId;
     }
 }
 
