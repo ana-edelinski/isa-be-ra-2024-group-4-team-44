@@ -18,14 +18,14 @@ public class GroupChatController {
     private GroupChatService groupChatService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<GroupChatDTO> createGroup(@RequestBody CreateGroupDTO dto) {
         GroupChatDTO createdGroup = groupChatService.createGroup(dto);
         return ResponseEntity.ok(createdGroup);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<List<GroupChatDTO>> getAllGroups() {
         List<GroupChatDTO> groups = groupChatService.getAllGroups();
         return ResponseEntity.ok(groups);
