@@ -2,9 +2,14 @@ package rs.ac.uns.ftn.informatika.jpa.model;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 @Entity
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class GroupChat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,8 +17,9 @@ public class GroupChat {
 
     private String name;
 
-    @ManyToMany
-    private Set<User> members = new HashSet<>();
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private List<Integer> memberIds;
 
     public Integer getId() {
         return id;
@@ -31,11 +37,11 @@ public class GroupChat {
         this.name = name;
     }
 
-    public Set<User> getMembers() {
-        return members;
+    public List<Integer> getMemberIds() {
+        return memberIds;
     }
 
-    public void setMembers(Set<User> members) {
-        this.members = members;
+    public void setMemberIds(List<Integer> memberIds) {
+        this.memberIds = memberIds;
     }
 }

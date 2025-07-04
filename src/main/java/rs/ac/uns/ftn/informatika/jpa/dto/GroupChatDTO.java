@@ -16,9 +16,7 @@ public class GroupChatDTO {
     public GroupChatDTO(GroupChat group) {
         this.id = group.getId();
         this.name = group.getName();
-        this.memberIds = group.getMembers().stream()
-                .map(User::getId)
-                .collect(Collectors.toList());
+        this.memberIds = group.getMemberIds();
     }
 
     public Integer getId() {
@@ -45,3 +43,4 @@ public class GroupChatDTO {
         this.memberIds = memberIds;
     }
 }
+
