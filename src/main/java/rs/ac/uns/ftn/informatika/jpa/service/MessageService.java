@@ -1,104 +1,53 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import rs.ac.uns.ftn.informatika.jpa.dto.MessageDTO;
-import rs.ac.uns.ftn.informatika.jpa.model.Message;
-import rs.ac.uns.ftn.informatika.jpa.model.User;
-import rs.ac.uns.ftn.informatika.jpa.repository.MessageRepository;
-import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
+import rs.ac.uns.ftn.informatika.jpa.dto.ChatMessageDTO;
+import rs.ac.uns.ftn.informatika.jpa.model.ChatMessage;
+import rs.ac.uns.ftn.informatika.jpa.repository.ChatMessageRepository;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
-
     @Autowired
-    private MessageRepository messageRepository;
+    private ChatMessageRepository chatMessageRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public void saveGroupMessage(ChatMessageDTO dto) {
+        ChatMessage msg = new ChatMessage();
+        msg.setContent(dto.getContent());
+        msg.setSenderId(dto.getSenderId());
+        msg.setSenderName(dto.getSenderName());
+        msg.setGroupId(dto.getGroupId());
+        msg.setTimestamp(LocalDateTime.now());
+        chatMessageRepository.save(msg);
+    }
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
-    public List<MessageDTO> getChatHistory(Integer userId1, Integer userId2) {
-        User user1 = userRepository.findById(userId1)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId1));
-        User user2 = userRepository.findById(userId2)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId2));
-
-        return messageRepository.findChatHistory(user1, user2)
+    public List<ChatMessageDTO> getLast10GroupMessages(Integer groupId) {
+        return chatMessageRepository.findTop10ByGroupIdOrderByTimestampDesc(groupId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<MessageDTO> getReceivedMessages(Integer receiverId) {
-        User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + receiverId));
+    private ChatMessageDTO convertToDTO(ChatMessage msg) {
+        ChatMessageDTO dto = new ChatMessageDTO();
+        dto.setContent(msg.getContent());
+        dto.setSenderId(msg.getSenderId());
+        dto.setSenderName(msg.getSenderName());
+        dto.setGroupId(msg.getGroupId());
+        return dto;
+    }
 
-        return messageRepository.findReceivedMessages(receiver)
+    public List<ChatMessageDTO> getAllGroupMessages(Integer groupId) {
+        return chatMessageRepository
+                .findByGroupIdOrderByTimestampAsc(groupId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<MessageDTO> getSentMessages(Integer senderId) {
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + senderId));
 
-        return messageRepository.findSentMessages(sender)
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public MessageDTO sendMessage(Integer senderId, Integer receiverId, String content) {
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + senderId));
-        User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + receiverId));
-
-        Message message = new Message();
-        message.setSender(sender);
-        message.setReceiver(receiver);
-        message.setContent(content);
-        message.setTimestamp(LocalDateTime.now());
-
-        Message savedMessage = messageRepository.save(message);
-        MessageDTO messageDTO = convertToDTO(savedMessage);
-
-        messagingTemplate.convertAndSend("/topic/messages/" + receiverId, messageDTO);
-
-        return messageDTO;
-    }
-
-    @Transactional
-    public void deleteChatHistory(Integer userId1, Integer userId2) {
-        User user1 = userRepository.findById(userId1)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId1));
-        User user2 = userRepository.findById(userId2)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId2));
-
-        messageRepository.deleteChatHistory(user1, user2);
-    }
-
-    private MessageDTO convertToDTO(Message message) {
-        return new MessageDTO(
-                message.getId(),
-                message.getSender().getId(),
-                message.getSender().getUsername(),
-                message.getReceiver().getId(),
-                message.getReceiver().getUsername(),
-                message.getContent(),
-                message.getTimestamp()
-        );
-    }
 }
