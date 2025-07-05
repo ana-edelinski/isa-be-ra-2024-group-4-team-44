@@ -148,6 +148,7 @@ public class UserService implements UserDetailsService {
         user.setActivated(false);
         user.setEnabled(true);
         user.setCreationTime(LocalDateTime.now());
+        user.setLastActivityDate(LocalDateTime.now());
 
         String activationToken = UUID.randomUUID().toString();
         user.setActivationToken(activationToken);
@@ -211,6 +212,7 @@ public ResponseEntity<UserTokenState> login(
         User user = userOptional.get();
         user.setActivated(true);
         user.setActivationToken(null);
+        user.setLastActivityDate(LocalDateTime.now());
 
         userRepository.save(user);
 
@@ -308,16 +310,19 @@ public ResponseEntity<UserTokenState> login(
         System.out.println("Funkcija se izvrsava");
 
         List<User> allUsers = userRepository.findAll();
-
+        System.out.println("Do kraja se izvrsava");
         for (User user : allUsers) {
             LocalDateTime lastActivity = user.getLastActivityDate();
             long daysBetween = ChronoUnit.DAYS.between(lastActivity, now);
+            System.out.println("vrednost iz baze: ");
+            System.out.println(lastActivity);
             System.out.println(daysBetween);
 
             // Proveri da li je korisnik neaktivan najmanje 7 dana
             // i da li je daysBetween deljiv sa 7 (7, 14, 21...)
             if (daysBetween >= 7 && daysBetween % 7 == 0) {
-                emailService.sendUnactiveReportEmail(user.getEmail());
+                System.out.println("Uslov zadovoljen.");
+                emailService.sendUnactiveReportEmail(user, lastActivity);
 
             }
         }
