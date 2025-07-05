@@ -87,6 +87,7 @@ public class WebSecurityConfig {
 				.authenticationEntryPoint(restAuthenticationEntryPoint)
 				.and()
 				.authorizeRequests()
+				.antMatchers("/ws/**").permitAll()
 //				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**", "/api/users/*/profile", "/api/users/*/changePassword", "").permitAll()
 				.antMatchers("/api/posts/user/**").permitAll()
 				.antMatchers("/auth/**", "/h2-console/**", "/api/foo", "/api/users/register", "/api/users/login", "/api/users/activate/**","/api/users/*/profile", "/api/users/*", "/api/users/role/*","/api/posts", "/api/images/*" , "/simulate-old-images", "/test-compress").permitAll()

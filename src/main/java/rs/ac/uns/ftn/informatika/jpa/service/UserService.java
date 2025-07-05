@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Isolation;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserInfoDTO;
+import rs.ac.uns.ftn.informatika.jpa.dto.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,13 +25,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import rs.ac.uns.ftn.informatika.jpa.dto.JwtAuthenticationRequest;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserTokenState;
 import rs.ac.uns.ftn.informatika.jpa.model.Role;
 import rs.ac.uns.ftn.informatika.jpa.model.User;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
-import rs.ac.uns.ftn.informatika.jpa.dto.UserDTO;
-import rs.ac.uns.ftn.informatika.jpa.dto.ChangePasswordDTO;
 import rs.ac.uns.ftn.informatika.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -520,6 +516,14 @@ public ResponseEntity<UserTokenState> login(
         ));
     }
 
+    public List<SimpleUserDTO> getAllSimpleUsers() {
+        List<User> users = userRepository.findAll();
+        List<SimpleUserDTO> dtoList = new ArrayList<>();
+        for (User user : users) {
+            dtoList.add(new SimpleUserDTO(user.getId(), user.getUsername()));
+        }
+        return dtoList;
+    }
 
 
 

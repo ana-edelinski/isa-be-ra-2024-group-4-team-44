@@ -178,6 +178,9 @@ public class UserController {
         return ResponseEntity.ok(usersPage);
     }
 
-
+    @GetMapping
+    public ResponseEntity<List<SimpleUserDTO>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllSimpleUsers());
+    }
 
 }
