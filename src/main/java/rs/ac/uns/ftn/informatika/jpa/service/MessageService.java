@@ -24,30 +24,4 @@ public class MessageService {
         msg.setTimestamp(LocalDateTime.now());
         chatMessageRepository.save(msg);
     }
-
-    public List<ChatMessageDTO> getLast10GroupMessages(Integer groupId) {
-        return chatMessageRepository.findTop10ByGroupIdOrderByTimestampDesc(groupId)
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    private ChatMessageDTO convertToDTO(ChatMessage msg) {
-        ChatMessageDTO dto = new ChatMessageDTO();
-        dto.setContent(msg.getContent());
-        dto.setSenderId(msg.getSenderId());
-        dto.setSenderName(msg.getSenderName());
-        dto.setGroupId(msg.getGroupId());
-        return dto;
-    }
-
-    public List<ChatMessageDTO> getAllGroupMessages(Integer groupId) {
-        return chatMessageRepository
-                .findByGroupIdOrderByTimestampAsc(groupId)
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-
 }

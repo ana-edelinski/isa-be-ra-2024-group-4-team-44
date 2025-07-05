@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.informatika.jpa.dto.ChatMessageDTO;
+import rs.ac.uns.ftn.informatika.jpa.service.GroupMembershipService;
 import rs.ac.uns.ftn.informatika.jpa.service.MessageService;
 
 import java.util.List;
@@ -15,14 +16,25 @@ public class GroupChatRestController {
     @Autowired
     private MessageService messageService;
 
-    @GetMapping("/{groupId}/last10")
-    public ResponseEntity<List<ChatMessageDTO>> getLast10GroupMessages(@PathVariable Integer groupId) {
-        return ResponseEntity.ok(messageService.getLast10GroupMessages(groupId));
+    @Autowired
+    private GroupMembershipService membershipService;
+
+    @PostMapping("/{groupId}/add-members")
+    public ResponseEntity<Void> addMembers(
+            @PathVariable Integer groupId,
+            @RequestBody List<Integer> userIds
+    ) {
+        membershipService.addMembers(groupId, userIds);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{groupId}/all")
-    public ResponseEntity<List<ChatMessageDTO>> getAllGroupMessages(@PathVariable Integer groupId) {
-        return ResponseEntity.ok(messageService.getAllGroupMessages(groupId));
+    @GetMapping("/{groupId}/history/{userId}")
+    public ResponseEntity<List<ChatMessageDTO>> getChatHistory(
+            @PathVariable Integer groupId,
+            @PathVariable Integer userId
+    ) {
+        return ResponseEntity.ok(membershipService.getHistoryForUser(groupId, userId));
     }
+
 
 }

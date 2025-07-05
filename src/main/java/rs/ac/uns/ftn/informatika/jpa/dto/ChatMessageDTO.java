@@ -1,10 +1,13 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
 
+import java.time.LocalDateTime;
+
 public class ChatMessageDTO {
     private String content;
     private Integer senderId;
     private String senderName;
     private Integer groupId;
+    private LocalDateTime timestamp;
 
     public String getContent() {
         return content;
@@ -37,4 +40,13 @@ public class ChatMessageDTO {
     public void setGroupId(Integer groupId) {
         this.groupId = groupId;
     }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
 }
