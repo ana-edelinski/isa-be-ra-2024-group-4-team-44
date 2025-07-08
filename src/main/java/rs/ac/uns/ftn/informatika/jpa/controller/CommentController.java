@@ -20,16 +20,17 @@ public class CommentController {
     @Autowired
     CommentService commentService;
 
-    @PostMapping()
+    @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
-    public ResponseEntity<CommentDTO> crateComment(
+    public ResponseEntity<CommentDTO> createComment(
             @RequestBody CommentDTO commentDTO) {
+        System.out.println(commentDTO.toString());
         try {
             CommentDTO cratedComment = commentService.createComment(commentDTO);
             return new ResponseEntity<>(cratedComment, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println("Greska u kontroleru.");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -25,6 +25,7 @@ public class CommentService {
     }
 
     public CommentDTO createComment(CommentDTO commentDTO){
+
         Post post = postRepository.findById(commentDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
@@ -39,6 +40,6 @@ public class CommentService {
         commentRepository.save(comment);
 
 
-        return commentDTO;
+        return new CommentDTO(comment);
     }
 }
