@@ -18,11 +18,21 @@ public class Address {
     @Column(name = "postal_code", nullable = false)
     private String postalCode;
 
-    public Address(Integer id, String street, String city, String postalCode) {
+    @Column(name = "latitude", nullable = false)
+    private Double latitude;
+
+    @Column(name = "longitude", nullable = false)
+    private Double longitude;
+
+
+
+    public Address(Integer id, String street, String city, String postalCode, Double latitude, Double longitude) {
         this.id = id;
         this.street = street;
         this.city = city;
         this.postalCode = postalCode;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Address() {}
@@ -59,4 +69,19 @@ public class Address {
         this.postalCode = postalCode;
     }
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
 }

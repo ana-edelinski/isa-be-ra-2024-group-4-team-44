@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.*;
 
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
 @SpringBootTest
 public class JpaExampleApplicationTests {
 
@@ -31,8 +31,8 @@ public class JpaExampleApplicationTests {
 		// Kreiramo dva UserDTO sa istim username-om
 		UserDTO user1 = new UserDTO(
 				null,
-				"test11011110@example.com",
-				"nikopiko11211",  // Ime korisnika
+				"tes0@example.com",
+				"nikopiko",  // Ime korisnika
 				"John",
 				"Doe",
 				"password123",
@@ -46,8 +46,8 @@ public class JpaExampleApplicationTests {
 
 		UserDTO user2 = new UserDTO(
 				null,
-				"test11111711@example.com",
-				"nikopiko11211",  // Ime korisnika
+				"tes0@example.com",
+				"nikopiko",  // Ime korisnika
 				"Jane",
 				"Smith",
 				"password123",
