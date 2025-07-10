@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
 import com.google.common.hash.BloomFilter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.dao.DataIntegrityViolationException;
 import com.google.common.hash.Funnels;
 import java.nio.charset.StandardCharsets;
@@ -69,15 +70,19 @@ public class UserService implements UserDetailsService {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
     private BloomFilter<String> usernameBloomFilter;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenUtils tokenUtils, AuthenticationManager authenticationManager) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenUtils tokenUtils, AuthenticationManager authenticationManager, MeterRegistry meterRegistry) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenUtils = tokenUtils;
         this.authenticationManager = authenticationManager;
+        this.meterRegistry = meterRegistry;
 
         // Inicijalizacija Bloom filtera sa očekivanim brojem unosa i stopom greške
         this.usernameBloomFilter = BloomFilter.create(
@@ -88,6 +93,11 @@ public class UserService implements UserDetailsService {
 
         // Popunjavanje Bloom filtera postojećim korisničkim imenima
         loadExistingUsernames();
+
+        //registrovanje custom metrike za broj aktivnih usera
+        meterRegistry.gauge("active_users_last_24h", this,
+                s -> s.countActiveUsersLast24h());
+
     }
     private void loadExistingUsernames() {
         List<String> usernames = userRepository.findAllUsernames();
@@ -95,6 +105,12 @@ public class UserService implements UserDetailsService {
             usernameBloomFilter.put(username);
         }
     }
+
+    public int countActiveUsersLast24h() {
+        LocalDateTime limit = LocalDateTime.now().minusHours(24);
+        return (int) userRepository.countActiveUsersSince(limit);
+    }
+
     @Autowired
     private EmailService emailService;
 
@@ -195,6 +211,12 @@ public ResponseEntity<UserTokenState> login(
     User user = (User) authentication.getPrincipal();
     String jwt = tokenUtils.generateToken(user.getUsername());
     int expiresIn = tokenUtils.getExpiredIn();
+
+    //Updejt lastActivity polja
+    userRepository.findById(user.getId()).ifPresent(u -> {
+        u.setLastActivityDate(LocalDateTime.now());
+        userRepository.save(u);
+    });
 
     // Vrati token kao odgovor na uspesnu autentifikaciju
     return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user.getId()));

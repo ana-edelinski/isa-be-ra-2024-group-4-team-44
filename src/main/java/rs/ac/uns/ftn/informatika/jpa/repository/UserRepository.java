@@ -99,5 +99,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     long countAllUsers();
 
     Optional<User> findOptionalByUsername(String username);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.lastActivityDate >= :since")
+    long countActiveUsersSince(@Param("since") LocalDateTime since);
+
 }
 
