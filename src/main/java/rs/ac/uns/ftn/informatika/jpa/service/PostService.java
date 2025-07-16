@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
+import rs.ac.uns.ftn.informatika.jpa.dto.AdvertisingMessageDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
@@ -34,6 +35,9 @@ public class PostService {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private AdvertisingProducerService advertisingProducerService;
 
     public PostDTO getById(Integer id) {
         Post post = postRepository.getPostById(id).orElseThrow(() -> new RuntimeException("Post not found"));
@@ -185,6 +189,9 @@ public class PostService {
 
         post.setAdvertised(true);
         postRepository.save(post);
+        advertisingProducerService.sendAdvertisingMessage(
+                new AdvertisingMessageDTO(post.getDescription(), post.getCreationTime(), post.getCreator().getUsername())
+        );
     }
 
 
