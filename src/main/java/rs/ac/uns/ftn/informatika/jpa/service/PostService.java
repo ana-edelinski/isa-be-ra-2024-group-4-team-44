@@ -53,7 +53,8 @@ public class PostService {
                 post.getComments().stream().map(CommentDTO::new).collect(Collectors.toList()),
                 likeCount,
                 post.getLocation() != null ? post.getLocation().getLatitude() : null,
-                post.getLocation() != null ? post.getLocation().getLongitude() : null
+                post.getLocation() != null ? post.getLocation().getLongitude() : null,
+                post.isAdvertised()
         );
     }
 
@@ -168,13 +169,24 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-public List<PostDTO> findNearbyPosts(Double latitude, Double longitude, Double radius) {
+    public List<PostDTO> findNearbyPosts(Double latitude, Double longitude, Double radius) {
 
-    List<Post> nearbyPosts = postRepository.findNearby(latitude, longitude, radius);
+        List<Post> nearbyPosts = postRepository.findNearby(latitude, longitude, radius);
 
-    return nearbyPosts.stream()
-            .map(PostDTO::new)
-            .collect(Collectors.toList());
-}
+        return nearbyPosts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void markAsAdvertised(Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        post.setAdvertised(true);
+        postRepository.save(post);
+    }
+
+
 
 }

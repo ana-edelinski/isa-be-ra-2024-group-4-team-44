@@ -174,4 +174,12 @@ public class PostController {
         return ResponseEntity.ok(nearbyPosts);
     }
 
+    @PutMapping("/advertise/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> markPostAsAdvertised(@PathVariable Integer id) {
+        postService.markAsAdvertised(id);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

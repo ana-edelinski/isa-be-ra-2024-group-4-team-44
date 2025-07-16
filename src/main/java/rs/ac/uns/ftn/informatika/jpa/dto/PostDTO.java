@@ -21,13 +21,15 @@ public class PostDTO {
     private Double locationLongitude;
     private List<CommentDTO> comments;
     private int likeCount;
+    private boolean advertised;
+
 
     public PostDTO() {}
 
     public PostDTO(Integer id, Integer creatorId, String creatorUsername, String description,
                    LocalDateTime creationTime, String imagePath, Integer locationId,
                    String locationStreet, String locationCity, String locationPostalCode, List<CommentDTO> comments, int likeCount,
-                    Double locationLatitude, Double locationLongitude) {
+                    Double locationLatitude, Double locationLongitude, boolean advertised) {
         this.id = id;
         this.creatorId = creatorId;
         this.creatorUsername = creatorUsername;
@@ -42,6 +44,7 @@ public class PostDTO {
         this.likeCount = likeCount;
         this.locationLatitude = locationLatitude;
         this.locationLongitude = locationLongitude;
+        this.advertised = advertised;
     }
 
     public PostDTO(Post post) {
@@ -51,6 +54,7 @@ public class PostDTO {
         this.description = post.getDescription();
         this.creationTime = post.getCreationTime();
         this.imagePath = post.getImagePath();
+        this.advertised = post.isAdvertised();
 
         if (post.getLocation() != null) {
             this.locationId = post.getLocation().getId();
@@ -124,5 +128,9 @@ public class PostDTO {
     }
     public Double getLocationLongitude() {
         return locationLongitude;
+    }
+
+    public boolean isAdvertised() {
+        return advertised;
     }
 }
