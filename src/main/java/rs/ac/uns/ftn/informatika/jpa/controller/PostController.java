@@ -7,7 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
-import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import rs.ac.uns.ftn.informatika.jpa.service.PostService;
 import java.util.List;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -178,6 +176,13 @@ public class PostController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> markPostAsAdvertised(@PathVariable Integer id) {
         postService.markAsAdvertised(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PutMapping("/simulate-conflict/{id}")
+    public ResponseEntity<Void> simulateConflictResolution(@PathVariable Integer id) {
+        postService.simulateConflictResolution(id);
         return ResponseEntity.ok().build();
     }
 

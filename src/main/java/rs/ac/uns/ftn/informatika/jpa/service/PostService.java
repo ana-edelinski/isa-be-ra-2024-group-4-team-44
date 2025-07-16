@@ -200,5 +200,22 @@ public class PostService {
     }
 
 
+    @Transactional
+    public void simulateConflictResolution(Integer postId) {
+        Post post = postRepository.findByIdForUpdate(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        System.out.println("Locked post with id " + postId);
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        System.out.println("Finished simulated update for post with id " + postId);
+    }
+
+
 
 }
