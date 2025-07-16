@@ -15,6 +15,7 @@ public class AdvertisingProducerService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
+    //routingKey prazan jer salje na fanout
     public void sendAdvertisingMessage(AdvertisingMessageDTO message) {
         rabbitTemplate.convertAndSend("advertising.exchange", "", message);
     }

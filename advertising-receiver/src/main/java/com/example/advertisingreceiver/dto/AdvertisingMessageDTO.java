@@ -6,16 +6,16 @@ public class AdvertisingMessageDTO {
 
     private String description;
     private LocalDateTime creationTime;
-    private String creatorUsername;
+    private String username;
 
     // Constructors
     public AdvertisingMessageDTO() {
     }
 
-    public AdvertisingMessageDTO(String description, LocalDateTime creationTime, String creatorUsername) {
+    public AdvertisingMessageDTO(String description, LocalDateTime creationTime, String username) {
         this.description = description;
         this.creationTime = creationTime;
-        this.creatorUsername = creatorUsername;
+        this.username = username;
     }
 
     // Getters and setters
@@ -35,12 +35,12 @@ public class AdvertisingMessageDTO {
         this.creationTime = creationTime;
     }
 
-    public String getCreatorUsername() {
-        return creatorUsername;
+    public String getUsername() {
+        return username;
     }
 
-    public void setCreatorUsername(String creatorUsername) {
-        this.creatorUsername = creatorUsername;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class AdvertisingMessageDTO {
         return "AdvertisingMessageDTO{" +
                 "description='" + description + '\'' +
                 ", creationTime=" + creationTime +
-                ", creatorUsername='" + creatorUsername + '\'' +
+                ", creatorUsername='" + username + '\'' +
                 '}';
     }
 

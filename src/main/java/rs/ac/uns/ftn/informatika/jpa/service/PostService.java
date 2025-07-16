@@ -186,11 +186,16 @@ public class PostService {
     public void markAsAdvertised(Integer postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+        User user = userRepository.findById(post.getCreator().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        System.out.println("username: " + user.getUsername());
+
 
         post.setAdvertised(true);
         postRepository.save(post);
         advertisingProducerService.sendAdvertisingMessage(
-                new AdvertisingMessageDTO(post.getDescription(), post.getCreationTime(), post.getCreator().getUsername())
+                new AdvertisingMessageDTO(post.getDescription(), post.getCreationTime(), user.getUsername())
         );
     }
 

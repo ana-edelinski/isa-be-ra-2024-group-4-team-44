@@ -1,25 +1,31 @@
 package com.example.advertisingreceiver.config;
 
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Configuration
+@EnableRabbit
 public class RabbitConfig {
-    public static final String EXCHANGE_NAME = "advertisingExchange";
-    public static final String QUEUE_NAME = "advertisingQueue";
-
     @Bean
-    FanoutExchange fanoutExchange() {
-        return new FanoutExchange(EXCHANGE_NAME);
+    public Jackson2JsonMessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 
     @Bean
-    Queue queue() {
+    public FanoutExchange advertisingExchange() {
+        return new FanoutExchange("advertising.exchange");
+    }
+
+    @Bean
+    public Queue advertisingQueue() {
         return new AnonymousQueue();
     }
 
     @Bean
-    Binding binding(FanoutExchange fanoutExchange, Queue queue) {
-        return BindingBuilder.bind(queue).to(fanoutExchange);
+    public Binding advertisingBinding(Queue advertisingQueue, FanoutExchange advertisingExchange) {
+        return BindingBuilder.bind(advertisingQueue).to(advertisingExchange);
     }
 }
