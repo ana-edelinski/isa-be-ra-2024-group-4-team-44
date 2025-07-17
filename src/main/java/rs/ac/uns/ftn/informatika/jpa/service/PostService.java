@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
+import rs.ac.uns.ftn.informatika.jpa.dto.AdvertisingMessageDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.CommentDTO;
 import rs.ac.uns.ftn.informatika.jpa.dto.PostDTO;
 import rs.ac.uns.ftn.informatika.jpa.model.Address;
@@ -35,6 +36,9 @@ public class PostService {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private AdvertisingProducerService advertisingProducerService;
+
     public PostDTO getById(Integer id) {
         Post post = postRepository.getPostById(id).orElseThrow(() -> new RuntimeException("Post not found"));
         int likeCount = likeRepository.countByPostId(id);
@@ -53,7 +57,8 @@ public class PostService {
                 post.getComments().stream().map(CommentDTO::new).collect(Collectors.toList()),
                 likeCount,
                 post.getLocation() != null ? post.getLocation().getLatitude() : null,
-                post.getLocation() != null ? post.getLocation().getLongitude() : null
+                post.getLocation() != null ? post.getLocation().getLongitude() : null,
+                post.isAdvertised()
         );
     }
 
@@ -168,13 +173,49 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-public List<PostDTO> findNearbyPosts(Double latitude, Double longitude, Double radius) {
+    public List<PostDTO> findNearbyPosts(Double latitude, Double longitude, Double radius) {
 
-    List<Post> nearbyPosts = postRepository.findNearby(latitude, longitude, radius);
+        List<Post> nearbyPosts = postRepository.findNearby(latitude, longitude, radius);
 
-    return nearbyPosts.stream()
-            .map(PostDTO::new)
-            .collect(Collectors.toList());
-}
+        return nearbyPosts.stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void markAsAdvertised(Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        User user = userRepository.findById(post.getCreator().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        System.out.println("username: " + user.getUsername());
+
+
+        post.setAdvertised(true);
+        postRepository.save(post);
+        advertisingProducerService.sendAdvertisingMessage(
+                new AdvertisingMessageDTO(post.getDescription(), post.getCreationTime(), user.getUsername())
+        );
+    }
+
+
+    @Transactional
+    public void simulateConflictResolution(Integer postId) {
+        Post post = postRepository.findByIdForUpdate(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        System.out.println("Locked post with id " + postId);
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        System.out.println("Finished simulated update for post with id " + postId);
+    }
+
+
 
 }

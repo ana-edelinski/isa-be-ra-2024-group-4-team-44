@@ -37,9 +37,13 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<Like> likes = new HashSet<>();
 
+    @Column(nullable = false)
+    private boolean advertised = false;
+
+
     public Post() {}
 
-    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, Set<Comment> comments, Set<Like> likes) {
+    public Post(Integer id, User creator, String description, LocalDateTime creationTime, String imagePath, Address location, Set<Comment> comments, Set<Like> likes, Boolean adveritsed) {
         this.id = id;
         this.creator = creator;
         this.description = description;
@@ -48,6 +52,7 @@ public class Post {
         this.location = location;
         this.comments = comments;
         this.likes = likes;
+        this.advertised = adveritsed;
     }
 
     public Integer getId() {
@@ -98,6 +103,10 @@ public class Post {
         this.location = location;
     }
 
+    public void setAdvertised(boolean advertised) {
+        this.advertised = advertised;
+    }
+
     public Set<Comment> getComments() {
         return comments;
     }
@@ -112,5 +121,9 @@ public class Post {
 
     public void setLikes(Set<Like> likes) {
         this.likes = likes;
+    }
+
+    public boolean isAdvertised() {
+        return advertised;
     }
 }
