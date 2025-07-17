@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.slf4j.Logger;
@@ -28,16 +29,23 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final RateLimiterService rateLimiterService;
 
     @Autowired
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository, UserRepository userRepository) {
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository, UserRepository userRepository, RateLimiterService rateLimiterService) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.rateLimiterService = rateLimiterService;
     }
     @Transactional
-    @RateLimiter(name = "comment-limit", fallbackMethod = "commentLimitFallback")
+    //@RateLimiter(name = "comment-limit", fallbackMethod = "commentLimitFallback")
     public CommentDTO createComment(CommentDTO commentDTO){
+
+        // SAMOSTALNA IMPLEMENTACIJA
+        if (!rateLimiterService.isAllowed(commentDTO.getUserId())) {
+            throw new RateLimitExceededException("Rate limit exceeded. Max 5 comments per minute.");
+        }
 
         Post post = postRepository.findById(commentDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
