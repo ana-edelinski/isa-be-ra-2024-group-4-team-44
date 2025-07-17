@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.informatika.jpa.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.imgscalr.Scalr;
@@ -18,13 +19,15 @@ import java.time.temporal.ChronoUnit;
 @Service
 public class ImageCompressionService {
 
-    private static final String IMAGE_DIRECTORY = "src/main/resources/static/images/";
+    @Value("${onlybuns.upload.path}")
+    private String imageDirectory;
+
     private static final int TARGET_WIDTH = 300;
 
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void compressOldImages() {
-        File imageDir = new File(IMAGE_DIRECTORY);
+        File imageDir = new File(imageDirectory);
 
 
         if (!imageDir.exists() || !imageDir.isDirectory()) {
@@ -77,7 +80,7 @@ public class ImageCompressionService {
     }
 
     public void simulateOldImages() {
-        File imageDir = new File(IMAGE_DIRECTORY);
+        File imageDir = new File(imageDirectory);
         File[] images = imageDir.listFiles();
 
         if (images == null) {

@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.informatika.jpa.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -102,40 +103,33 @@ public class PostController {
         }
     }
 
+    @Value("${onlybuns.upload.path}")
+    private String uploadDir;
+
     @PostMapping("/uploadImage")
     //@PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<PostDTO> uploadImage(@RequestParam("file") MultipartFile file) {
-        final String uploadDir = "src/main/resources/static/images/";
-        Path uploadDirPath = Paths.get(uploadDir);
-        System.out.println("Ime fajla: " + file.getOriginalFilename());
-        System.out.println("Veličina fajla: " + file.getSize());
-
-        if (Files.notExists(uploadDirPath)) {
-            try {
-                Files.createDirectories(uploadDirPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
         try {
-            System.out.println("pozvao se kontroler");
+            Path uploadPath = Paths.get(uploadDir);
 
-            // Generiši jedinstveno ime za fajl
+            if (Files.notExists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path targetLocation = Paths.get(uploadDir, fileName);
+            Path targetLocation = uploadPath.resolve(fileName);
 
-            // Sačuvaj fajl na fajl sistemu
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            String imagePath = targetLocation.toString();
-            System.out.println("Vraćeni imagePath: " + imagePath);
-
+            // Vrati relativnu putanju koju frontend koristi
+            String imagePath = "/images/" + fileName;
 
             PostDTO postDTO = new PostDTO();
             postDTO.setImagePath(imagePath);
 
             return new ResponseEntity<>(postDTO, HttpStatus.OK);
         } catch (IOException ex) {
+            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

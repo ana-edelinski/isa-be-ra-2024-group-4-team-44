@@ -1,10 +1,13 @@
 package rs.ac.uns.ftn.informatika.jpa.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import rs.ac.uns.ftn.informatika.jpa.model.Post;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PostDTO {
 
     private Integer id;
