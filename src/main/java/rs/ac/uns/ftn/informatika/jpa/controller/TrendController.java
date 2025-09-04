@@ -22,7 +22,7 @@ public class TrendController {
 
     // Ukupan broj objava na mreži
     @GetMapping("/total-posts")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Long> getTotalNumberOfPosts() {
         long totalPosts = trendService.getTotalNumberOfPosts();
         return ResponseEntity.ok(totalPosts);
@@ -30,7 +30,7 @@ public class TrendController {
 
     // Broj objava u poslednjih 30 dana
     @GetMapping("/posts-last-30-days")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Long> getNumberOfPostsInLast30Days() {
         long postsLast30Days = trendService.getNumberOfPostsInLast30Days();
         return ResponseEntity.ok(postsLast30Days);
@@ -39,7 +39,7 @@ public class TrendController {
 
     // 5 najpopularnijih objava u poslednjih 7 dana
     @GetMapping("/top5-posts-last-7-days")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<List<Post>> getTop5PostsInLast7Days() {
         List<Post> top5Posts = trendService.getTop5PostsInLast7Days();
         return ResponseEntity.ok(top5Posts);
@@ -47,7 +47,7 @@ public class TrendController {
 
     // 10 najpopularnijih objava ikada
     @GetMapping("/top10-posts-all-time")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<List<Post>> getTop10PostsOfAllTime() {
         List<Post> top10Posts = trendService.getTop10PostsOfAllTime();
         return ResponseEntity.ok(top10Posts);
@@ -55,7 +55,7 @@ public class TrendController {
 
     // 10 korisnika koji su podelili najviše lajkova u poslednjih 7 dana
     @GetMapping("/top10-users-likes-last-7-days")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<List<Map<String, Object>>> getTop10UsersByLikesGivenInLast7Days() {
         // Poziv servisa koji vraća korisnike sa najviše lajkova
         List<Map<String, Object>> topUsers = trendService.getTop10UsersByLikesGivenInLast7Days();
