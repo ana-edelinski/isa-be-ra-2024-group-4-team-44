@@ -70,4 +70,10 @@ public interface PostRepository  extends JpaRepository<Post, Integer> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Post p WHERE p.id = :id")
     Optional<Post> findByIdForUpdate(@Param("id") Integer id);
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.creationTime >= :startDate AND p.creationTime <= :endDate")
+    long countPostsBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.creationTime >= :startDate AND c.creationTime <= :endDate")
+    long countCommentsBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }
