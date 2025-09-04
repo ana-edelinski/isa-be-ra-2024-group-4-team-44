@@ -162,7 +162,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Page<UserInfoDTO>> searchUsers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String surname,
