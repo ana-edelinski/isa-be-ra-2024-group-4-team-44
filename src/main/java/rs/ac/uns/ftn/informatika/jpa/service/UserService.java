@@ -35,6 +35,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import rs.ac.uns.ftn.informatika.jpa.service.UserService;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,6 +46,8 @@ import rs.ac.uns.ftn.informatika.jpa.util.TokenUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 
 @Service
@@ -74,6 +78,9 @@ public class UserService implements UserDetailsService {
     private MeterRegistry meterRegistry;
 
     private BloomFilter<String> usernameBloomFilter;
+
+    private final Map<Integer, Deque<Instant>> followAttempts = new ConcurrentHashMap<>();
+    private static final int MAX_FOLLOWS_PER_MINUTE = 50;
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenUtils tokenUtils, AuthenticationManager authenticationManager, MeterRegistry meterRegistry) {
@@ -371,9 +378,34 @@ public ResponseEntity<UserTokenState> login(
         return userRepository.isFollowing(currentUserId, targetUserId);
     }
 
+    private boolean canFollow(Integer followerId) {
+        Instant now = Instant.now();
+        Deque<Instant> timestamps = followAttempts.computeIfAbsent(followerId, k -> new ConcurrentLinkedDeque<>());
+
+        // Izbaci sve starije od 1 minuta
+        while (!timestamps.isEmpty() &&
+                Duration.between(timestamps.peekFirst(), now).toMinutes() >= 1) {
+            timestamps.pollFirst();
+        }
+
+        if (timestamps.size() >= MAX_FOLLOWS_PER_MINUTE) {
+            return false; // limit probijen
+        }
+
+        timestamps.addLast(now);
+        return true;
+    }
+
+
     @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED)
-    @RateLimiter(name = "follow-limit", fallbackMethod = "standardFallback")
+    //@RateLimiter(name = "follow-limit", fallbackMethod = "standardFallback")
     public ResponseEntity<Map<String, String>> followUser(Integer followerId, Integer followingId) {
+        if (!canFollow(followerId)) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "You can follow maximum " + MAX_FOLLOWS_PER_MINUTE + " users per minute");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
+
         if (followerId.equals(followingId)) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "You cannot follow yourself");
@@ -421,7 +453,6 @@ public ResponseEntity<UserTokenState> login(
 
 
     @Transactional
-    @RateLimiter(name = "unfollow-limit", fallbackMethod = "standardFallback")
     public ResponseEntity<Map<String, String>> unfollowUser(Integer followerId, Integer followingId) {
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new NoSuchElementException("Follower not found"));
@@ -440,13 +471,6 @@ public ResponseEntity<UserTokenState> login(
         Map<String, String> successResponse = new HashMap<>();
         successResponse.put("message", "You have unfollowed " + toUnfollow.getUsername());
         return ResponseEntity.ok(successResponse);
-    }
-
-    public ResponseEntity<Map<String, String>> standardFallback(Integer followerId, Integer followingId, RequestNotPermitted rnp) {
-        LOG.warn("Rate limit exceeded for follow request. Follower ID: {}, Following ID: {}", followerId, followingId);
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Rate limit exceeded. Please try again later.");
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
     }
 
     public List<UserInfoDTO> getFollowing(Integer userId) {
