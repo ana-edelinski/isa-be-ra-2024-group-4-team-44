@@ -57,8 +57,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value ="0")})
     Optional<User> findByIdWithLock(@Param("id") Integer id);
 
-    @Query("SELECT u FROM User u WHERE u.activated = false AND u.creationTime <= :threshold")
-    List<User> findInactiveUsers(@Param("threshold") LocalDateTime threshold);
+    @Query("SELECT u FROM User u WHERE u.activated = false")
+    List<User> findInactiveUsers();
 
     Page<User> findAll(Pageable pageable);
 

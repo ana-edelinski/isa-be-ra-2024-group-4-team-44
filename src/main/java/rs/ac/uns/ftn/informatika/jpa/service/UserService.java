@@ -490,9 +490,7 @@ public ResponseEntity<UserTokenState> login(
     @Transactional
     public void deleteInactiveAccounts() {
         System.out.println("Method deleteInactiveAccounts started");
-        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
-        System.out.println(oneMonthAgo);
-        List<User> inactiveUsers = userRepository.findInactiveUsers(oneMonthAgo);
+        List<User> inactiveUsers = userRepository.findInactiveUsers();
 
         System.out.println("Number of inactive users found: " + inactiveUsers.size());
 
